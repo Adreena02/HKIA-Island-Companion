@@ -4,6 +4,45 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
+## [Current 0.9 Patch] - Gift Tracking & Inventory Editing
+
+### Added
+- **🎀 Daily Gift Tracker** - each resident tracks up to 3 gifts per day. A compact counter sits on the resident card; the full tracker in the detail modal includes dot indicators, a Log Gift button, timestamp of the last gift, and a manual Reset button for in-game reset items
+- **Automatic daily reset** - gift counts reset automatically at 7AM GMT (6 AM during Daylight Savings Time). No manual action needed
+- **`giftReset`.js utility** - handles all reset logic, expiry checks, and time formatting in one place
+- **`GiftTracker` component** — reusable component used in both compact (card) and full (modal) form
+- **✏️ Edit inventory items** — each inventory card now has an edit button to update emoji, name, quantity, and tags without deleting and re-adding
+
+### Changed
+- "View Gifts" button on resident cards renamed to **"View Details"** — more accurate since the modal covers abilities, gift tracking, and gifting cross-reference too
+
+### Fixed
+- Inventory quantity now always displays even for items added before the qty field existed, defaulting to 0
+- Quantity text colour made explicit so it's always visible against the white card background
+
+---
+
+## [0.8 Patch] - Character Palettes & Visual Fixes
+
+### Added
+- **4 new character palettes** - Chococat (chocolate brown), Retsuko (red), Pekkle (sunny yellow), Hangyodon (ocean teal)
+
+### Changed
+- Chococat, Retsuko, Pekkle, and Hangyodon reassigned from borrowed palettes to their own
+
+### Fixed
+- Portrait now **floats between the outer tint and inner white card** - eliminates the thin white line visual bug at the top of resident cards
+- Inner white card given a subtle coloured border so the edge is always visible on light palettes
+- Light palette backgrounds (Cinnamoroll, Pochacco, Hangyodon, Pekkle) made more saturated so the tine is clearly visible
+
+---
+## [0.7 Patch] - Dreamy Animated Background
+
+### Changed
+- **Dreamy animated background** - replaces the dynamic per-tab background with a slow 28 second drifting pastel gradient blending pink, lavender, peach, mint, and sky blue
+
+---
+
 ## [Current 0.6 Patch] — Tag System & Gifting Cross-Reference
 
 ### Added
