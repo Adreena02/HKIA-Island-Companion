@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Btn } from "../ui/Btn";
 import { ACCENT_BG_GRADIENTS, ACCENT_GRADIENTS, ACCENT_SOLID, getSafeColor, normaliseAbility } from "../../constants";
 import { TagPill } from "../ui/TagPill";
+import { GiftTracker } from "./GiftTracker";
 
-export function ResidentCard({ resident, onLevelChange, onViewDetails }) {
+export function ResidentCard({ resident, onLevelChange, onViewDetails, onGiftLog }) {
   const [hov, setHov] = useState(false);
   const { name, birthday, maxLevel, currentLevel, firstGift, note, imageUrl } = resident;
 
@@ -62,7 +63,8 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails }) {
         {/* Name */}
         <div style={{ textAlign: "center", marginBottom: 8 }}>
           <span style={{
-            fontFamily: "'Baloo 2', cursive", fontSize: "1.3rem",
+            fontFamily: "'Baloo 2', cursive",
+            fontSize: "clamp(1.1rem, 4vw, 1.3rem)",
             fontWeight: 700, color: solidColor,
           }}>{name}</span>
         </div>
@@ -75,7 +77,7 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails }) {
         )}
 
         {/* Row 1 — Birthday + Friendship */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 8, marginBottom: 12 }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a", marginBottom: 4 }}>🎂 Birthday</div>
             <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#3a2e2e" }}>
@@ -100,11 +102,22 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails }) {
         </div>
 
         {/* Return Gift */}
-        <div style={{ borderTop: "1px solid #f0ebe5", paddingTop: 12, marginBottom: hasAbilities || note ? 12 : 0, textAlign: "center" }}>
+        <div style={{ borderTop: "1px solid #f0ebe5", paddingTop: 12, marginBottom: 12, textAlign: "center" }}>
           <div style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a", marginBottom: 4 }}>🎁 Return Gift</div>
           <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#3a2e2e" }}>
             {firstGift || <span style={{ color: "#bbb", fontStyle: "italic" }}>—</span>}
           </div>
+        </div>
+
+        {/* Daily Gift Tracker */}
+        <div style={{ borderTop: "1px solid #f0ebe5", paddingTop: 12, marginBottom: hasAbilities || note ? 12 : 0 }}>
+          <GiftTracker
+            giftLog={resident.giftLog}
+            onLog={() => onGiftLog(resident.id)}
+            onReset={null}
+            compact
+            color={solidColor}
+          />
         </div>
 
         {/* Companion Abilities */}
@@ -154,11 +167,28 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails }) {
             </div>
           </div>
         )}
+
+        {/* Personal note */}
+        {resident.personalNote?.trim() && (
+          <div style={{ borderTop: "1px solid #f0ebe5", paddingTop: 10, textAlign: "center" }}>
+            <div style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a", marginBottom: 4 }}>
+              📝 My Notes
+            </div>
+            <div style={{
+              fontSize: "0.78rem", color: "#5a4a4a", lineHeight: 1.5,
+              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+              overflow: "hidden", fontStyle: "italic",
+            }}>
+              {resident.personalNote}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* View Gifts button — sits outside inner card, inside tint bg */}
+      {/* View Details button — sits outside inner card, inside tint bg */}
       <div style={{ textAlign: "center", marginTop: 12 }}>
-        <Btn variant="ghost" small onClick={() => onViewDetails(resident)}>
+        <Btn variant="ghost" small onClick={() => onViewDetails(resident)}
+          aria-label={`View details for ${resident.name}`}>
           🌸 View Details
         </Btn>
       </div>

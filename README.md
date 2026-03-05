@@ -16,6 +16,17 @@ This is the better alternative to scouring the wiki for hours. Everything in one
 
 ## ✨ Features
 
+### 🏠 Home (Dashboard)
+
+The first thing you see when you open the app. A live overview of everything that matters today. The dashboard is laid out as a 2×2 grid of widgets — Daily Checklist and Seasonal Events on the top row, Daily Gifts and Friendship Milestones on the bottom row. Each widget is a fixed height and scrolls internally so the layout stays clean. On mobile the grid stacks to a single column.
+
+- **✅ Daily Checklist** — built-in tasks for daily gifts, collecting your daily reward, and completing daily quests. Add your own custom tasks too. A live countdown in the header ticks down second by second to the next 7AM UTC reset. Custom tasks are always preserved across resets; only the checked state clears
+- **🎀 Daily Gifts Summary** — all 13 residents at a glance with dot indicators showing how many gifts you've given today. Hit **＋ Gift** to log a gift directly from the dashboard without navigating away. Sorted with residents who still need gifts first. Shows a celebration message when everyone's done
+- **🌟 Friendship Milestones** — pick any resident from a dropdown to see their friendship progress bar, what ability unlocks next and how many levels away it is, and a full scrollable timeline of every milestone colour-coded by whether you've reached it
+- **📅 Seasonal Events** — all 19 known recurring HKIA events with live countdowns. Active events show days remaining with a green badge; upcoming events show days away. Filter between Active, Upcoming, and All
+
+---
+
 ### 🐱 Residents
 
 All 13 residents are pre-loaded with their real in-game portraits. The 6 immediately available residents are ready from the start, and the 7 encountered elsewhere residents each have a location hint on their card.
@@ -27,8 +38,9 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 - Each resident's **3 liked tags** displayed as emoji pills below their name — hover any pill to see the tag name
 - **Friendship level tracker** with +/− buttons and a colour-matched progress bar
 - **🎁 Return Gift** — the item the resident gives you the first time you gift them
-- **🎀 Daily Gift Tracker** — log up to 3 gifts per day per resident, with a counter that shows how many you've given. Automatically resets at 7AM GMT every day (6AM during Daylight Saving Time)
+- **🎀 Daily Gift Tracker** — log up to 3 gifts per day per resident. Automatically resets at 7AM UTC every day
 - **Companion ability pills** showing progress at a glance — ○ not started, ◑ partially unlocked (X/Y), ✓ fully unlocked
+- **📝 Personal Notes** — a compact 2-line preview of any notes you've jotted down about this resident
 
 **In the detail modal:**
 - **🎀 Daily Gift Tracker** — full version with dot indicators, a Log Gift button, timestamp of your last gift, and a manual Reset button for when you use an in-game reset item
@@ -36,6 +48,7 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 - 🎁 **Liked Gifts** — sorted by heart tier then friendship value, each showing hearts and FV
 - 🎒 **Giftable from Inventory** — automatically cross-references the resident's liked tags against your inventory and shows every item you currently have that qualifies as a gift, with matching tags highlighted
 - 🌟 **Companion Abilities** — every ability with its unlock friendship level and description, broken down by tier for multi-level abilities, togglable per level
+- **📝 My Notes** — a free-text field to jot down anything about this resident. Saves automatically as you type
 
 > All gift and ability data is real game data — pre-filled for you, nothing to enter manually.
 
@@ -60,6 +73,10 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 
 - Build out your recipe book with ingredients, categories, and crafting results
 - **Ingredient autocomplete** pulls suggestions straight from your inventory
+- **Category filter bar** — filter by Cooking, Crafting, Farming, Gifting, or Other
+- **Craftable-first sorting** — recipes you can make right now automatically float to the top
+- **✨ Ready badge** and green border glow on any recipe where you have all the ingredients
+- **"X ready to craft" counter** in the header — see at a glance what you can make right now
 - Every recipe card has a **live progress bar** showing how many ingredients you already have
 - Hit **🔍 Check Ingredients** for a full ✅/❌ breakdown — what you have, what you're missing, how many more you need
 - 🎉 **Confetti celebration** in Hello Kitty colours when you have everything ready to craft!
@@ -81,10 +98,13 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 ### 🌐 App-wide
 
 - **Dreamy animated background** — a slow drifting pastel gradient blending pink, lavender, peach, mint, and sky blue
+- **Scrolling ticker banner** at the top of the page with development updates, colour-themed to the active tab
+- **📱 Mobile responsive** — works on phones and tablets. The dashboard stacks to a single column, card grids go single-column, modals resize with safe padding, and tab/filter buttons scale down or wrap cleanly
 - **Everything saves automatically** — no accounts, no sign-in, fully browser-based
 - **Export & Import** your full island data as a JSON file — residents, inventory, recipes, and catalogue all included
 - **Toast notifications** for every save and delete
 - All existing data **migrates automatically** from older versions
+- **Keyboard accessible** — all interactive elements are reachable by keyboard with visible focus indicators
 
 ---
 
@@ -114,11 +134,33 @@ New tags you create will display as text until an emoji is added to the `TAG_EMO
 
 ## 🎀 Gift Tracking
 
-Each resident can receive up to 3 gifts per day. The daily reset happens at **7AM GMT** (6AM GMT during Daylight Saving Time). The app tracks this automatically — no manual date management needed.
+Each resident can receive up to 3 gifts per day. The daily reset happens at **7AM UTC** every day — the same time the game resets. The app tracks this automatically, no manual date management needed.
 
-- **Log a gift** by clicking the counter on a resident card or the Log Gift button in their detail modal
+- **Log a gift** from the dashboard Daily Gifts widget, the counter on a resident card, or the Log Gift button in the detail modal
 - **Manual reset** available in the detail modal for when you use an in-game reset item
-- The counter resets itself automatically at the correct time each day
+- The counter resets itself automatically at the correct time each day, regardless of your timezone
+- A **live countdown** in the Daily Checklist widget ticks down to the next reset in real time
+
+---
+
+## 📅 Seasonal Events
+
+The app tracks all 19 known recurring HKIA events with live countdowns on the Home tab. Events are categorised as Primary (major ~6-week events), Secondary (shorter events), Calendar (log-in daily reward calendars), or Flash (a few days only).
+
+Event dates are approximate — Sunblink adjusts them slightly each year. The app notes this wherever relevant. All events recur annually.
+
+---
+
+## ♿ Accessibility
+
+The app is built with keyboard users and screen readers in mind:
+
+- All buttons and interactive elements are keyboard navigable with clear `:focus-visible` outlines
+- Focus ring colour follows the active tab's character theme
+- All modals use `role="dialog"` and `aria-modal` so screen readers announce them correctly
+- Progress bars use `role="progressbar"` with proper `aria-valuenow/min/max` attributes
+- Every action button has a descriptive `aria-label`
+- Decorative emoji are hidden from assistive technology with `aria-hidden`
 
 ---
 
@@ -147,7 +189,7 @@ npx vitest
 
 > **Note:** If upgrading from an earlier version, you can safely delete `src/components/furniture/FurnitureTab.jsx` — it was replaced by `CatalogueTab.jsx` and is no longer used.
 
- The app loads with all 13 residents pre-filled. If you're updating from an older version and things look off, open your browser console and run `localStorage.clear()` then refresh.
+> If things look off after updating, open your browser console and run `localStorage.clear()` then refresh.
 
 ---
 

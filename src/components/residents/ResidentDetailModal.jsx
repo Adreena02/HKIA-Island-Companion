@@ -1,12 +1,13 @@
 import { Modal } from "../ui/Modal";
 import { ACCENT_GRADIENTS, ACCENT_SOLID, getSafeColor, normaliseAbility } from "../../constants";
 import { TagPill } from "../ui/TagPill";
+import { GiftTracker } from "./GiftTracker";
 
 function Hearts({ count }) {
   return <span style={{ letterSpacing: 1 }}>{"❤️".repeat(count)}</span>;
 }
 
-export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, inventory }) {
+export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, onGiftLog, onGiftReset, inventory, onNoteChange }) {
   if (!resident) return null;
   const { name, color, imageUrl, lovedGift, gifts, abilities, likedTags } = resident;
 
@@ -29,7 +30,7 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
   return (
     <Modal open={open} onClose={onClose} title={`${name} — Details`}>
       {/* Mini header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22, paddingBottom: 18, borderBottom: "2px solid #f2eee8" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22, paddingBottom: 18, borderBottom: "2px solid #f2eee8", flexWrap: "wrap" }}>
         <div style={{
           width: 60, height: 60, borderRadius: "50%", flexShrink: 0,
           border: `3px solid ${accentStart}`, background: "#f2eee8", overflow: "hidden",
@@ -40,8 +41,16 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
             : null}
           <div style={{ display: imageUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", fontSize: "1.6rem", color: "#c0a0a0" }}>🐾</div>
         </div>
-        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.3rem", fontWeight: 700, color: "#3a2e2e" }}>{name}</span>
+        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "clamp(1.1rem, 4vw, 1.3rem)", fontWeight: 700, color: "#3a2e2e" }}>{name}</span>
       </div>
+
+      {/* Daily Gift Tracker */}
+      <GiftTracker
+        giftLog={resident.giftLog}
+        onLog={() => onGiftLog(resident.id)}
+        onReset={() => onGiftReset(resident.id)}
+        color={solidColor}
+      />
 
       {/* Loved Gift */}
       {lovedGift && (
@@ -64,6 +73,7 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
           {sortedGifts.length ? sortedGifts.map((g, i) => (
             <div key={i} style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
+              flexWrap: "wrap", gap: 6,
               background: "#faf7f4", borderRadius: 8, padding: "8px 12px",
               border: "1px solid #ede8e2",
             }}>
@@ -90,6 +100,7 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
             {giftableItems.map((item) => (
               <div key={item.id} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
+                flexWrap: "wrap", gap: 6,
                 background: "#faf7f4", borderRadius: 8, padding: "7px 12px",
                 border: "1px solid #ede8e2",
               }}>
@@ -124,6 +135,7 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
                   {ability.levels.map((lvl, li) => (
                     <div key={li} style={{
                       display: "flex", alignItems: "flex-start", gap: 10,
+                      flexWrap: "wrap",
                       background: lvl.unlocked ? "linear-gradient(135deg, #fff0f3, #ffe8ee)" : "#fff",
                       borderRadius: 8, padding: "8px 10px",
                       border: `1px solid ${lvl.unlocked ? "#ffd6df" : "#ede8e2"}`,
@@ -131,6 +143,7 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
                     }}>
                       <button
                         onClick={() => onAbilityToggle(resident.id, ai, li)}
+                        aria-label={`${lvl.unlocked ? "Lock" : "Unlock"} ${ability.name} level ${lvl.level}`}
                         title={lvl.unlocked ? "Mark as locked" : "Mark as unlocked"}
                         style={{
                           flexShrink: 0, width: 24, height: 24, borderRadius: "50%",
@@ -168,6 +181,33 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
           <div style={{ fontSize: "0.72rem", color: "#b0a0a0", fontStyle: "italic", marginTop: 8 }}>Click the circle to mark a level as unlocked</div>
         </div>
       )}
+
+      {/* Personal Notes */}
+      <div style={{ marginTop: 20, paddingTop: 20, borderTop: "1px solid #f2eee8" }}>
+        <label
+          htmlFor={`note-${resident.id}`}
+          style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#7a6a6a", display: "block", marginBottom: 8 }}
+        >
+          📝 My Notes
+        </label>
+        <textarea
+          id={`note-${resident.id}`}
+          value={resident.personalNote ?? ""}
+          onChange={(e) => onNoteChange(resident.id, e.target.value)}
+          placeholder={`Jot down anything about ${name}…`}
+          rows={3}
+          style={{
+            width: "100%", padding: "10px 14px", borderRadius: 12,
+            border: "2px solid rgba(180,130,130,0.2)",
+            fontFamily: "'Nunito', sans-serif", fontSize: "0.9rem",
+            color: "#3a2e2e", background: "#f2eee8",
+            outline: "none", resize: "vertical", boxSizing: "border-box",
+            transition: "border-color 0.2s, background 0.2s", lineHeight: 1.5,
+          }}
+          onFocus={(e) => { e.target.style.borderColor = "#ff8fa3"; e.target.style.background = "#fff"; }}
+          onBlur={(e)  => { e.target.style.borderColor = "rgba(180,130,130,0.2)"; e.target.style.background = "#f2eee8"; }}
+        />
+      </div>
     </Modal>
   );
 }

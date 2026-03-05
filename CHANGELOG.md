@@ -4,7 +4,76 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
-## [Current 1.2 Patch] — Bug Fixes & Code Cleanup
+## [2.1] — Dashboard Polish & Mobile Responsiveness
+
+### Added
+- **📱 Mobile responsiveness across the entire app** — every tab now adapts gracefully to phones and tablets:
+  - Dashboard 2×2 grid collapses to a single column below 700px
+  - Resident, Recipe, and Inventory card grids go single-column on narrow screens using `min()` in `minmax`
+  - All filter buttons and tab nav use `clamp` for font size and scale down without wrapping awkwardly
+  - Modals use `clamp` padding and font so they never overflow on small screens; close button gets `flexShrink: 0`
+  - All flex rows with name + actions (gift rows, inventory rows, ability rows, furniture cards) get `flexWrap: wrap` so they stack rather than overflow
+  - Header titles across all tabs use `clamp` for responsive font sizing
+
+- **⏱️ Live countdown in Daily Checklist** — the subtitle now shows `Resets in Xh XXm XXs` and ticks down every second via a `setInterval` that cleans up on unmount. Replaces the static "Resets at [time]" label
+
+- **＋ Gift quick-log button on Dashboard** — each resident row in the Daily Gifts widget now has a character-coloured **＋ Gift** button. Tapping it logs a gift instantly, fires a toast, and updates the dot indicators in real time. Residents who've received all 3 gifts show a green **✓ Done** label instead. Writes to the same `hkia_residents` localStorage key so it stays in sync with the Residents tab
+
+- **🍑 Warm Peach palette for the Home tab** — the Home tab now has its own distinct colour identity instead of sharing Hello Kitty red. Added `home` key to `ACCENT_GRADIENTS`, `ACCENT_BG_GRADIENTS`, and `ACCENT_SOLID` in `constants.js`
+
+### Changed
+- **Dashboard layout** — cards are now arranged as a proper 2×2 grid with fixed `340px` row heights so all four widgets are the same size. Top row: Daily Checklist + Seasonal Events. Bottom row: Daily Gifts + Friendship Milestones
+- **All four dashboard cards are now scrollable** — each card has a fixed height and scrolls internally, with a soft fade-out gradient at the bottom to hint at more content. The `DashboardCard` wrapper component handles this via a pinned header slot and a `flex: 1` scroll area
+- **Section headers centred** across all four dashboard widgets
+- **Friendship Milestones** — removed the duplicate level label that appeared on the right side of each milestone row. Level is now only shown once, in the left badge
+
+### Fixed
+- **Duplicate `flexShrink` key** in the Daily Checklist toggle button style — removed the second `flexShrink: 0` that was causing a Vite warning
+
+---
+
+## [2.0] — Dashboard / Home Tab
+
+### Added
+- **🏠 Home tab** — new first tab, set as the default landing page on load
+- **✅ Daily Checklist** — 3 built-in tasks (daily gifts, collect daily reward, complete daily quests) plus unlimited custom tasks you can add yourself. Resets at 7AM UTC globally. Custom tasks survive the reset; checked state does not
+- **🎀 Daily Gifts Summary** — all 13 residents listed with dot indicators and remaining gift count. Sorted with residents who still need gifts first. Shows "All gifts given today!" when complete
+- **🌟 Friendship Milestones** — resident dropdown with friendship progress bar, a "next unlock" callout showing the upcoming ability and how many levels away it is, and a full scrollable timeline of every ability milestone colour-coded by whether you've reached it
+- **📅 Seasonal Events tracker** — all 19 known recurring HKIA events with live countdowns. Active events show days remaining with a green ACTIVE badge; upcoming events show days away. Filter between Active, Upcoming, and All. Dates are approximate and noted as such
+- **`constants_events.js`** — seed data for all 19 known recurring events with names, emojis, types, approximate date ranges, descriptions, and notes
+
+### Fixed
+- **`giftReset.js` was a placeholder** — the file contained only the word "placeholder". Now fully implemented with `getLastResetTime`, `getNextResetTime`, `isExpired`, `getCurrentGiftCount`, `formatNextReset`, `formatGiftTime`, and `getLastResetISO`. This fixes gift tracking across the entire app
+- **Daily Checklist resets at 7AM UTC** — previously used local calendar date (midnight) as the reset boundary; now uses `getLastResetISO` to match the game's exact reset time globally
+
+---
+
+## [1.3 Patch] — Resident Notes, Recipe Improvements & Accessibility
+
+### Added
+- **📝 Personal Notes on residents** — a free-text notes field in the detail modal, auto-saved as you type. Notes show as a compact 2-line preview on the resident card too
+- **Category filter bar on Recipes** — filter your recipe book by Cooking, Crafting, Farming, Gifting, or Other with a single click
+- **Craftable-first sorting** — recipes you can make right now float to the top of the list automatically
+- **✨ Ready badge** on recipe cards — a green badge and green border glow appear when you have all ingredients for a recipe
+- **"X ready to craft" counter** in the Recipe Book header — see at a glance how many recipes you can make right now
+- **Context-aware empty states** on Recipes — message changes based on whether you've filtered by category or have no recipes at all
+
+### Changed
+- Recipe cards with all ingredients available now show a green border glow instead of the standard white border
+
+### Accessibility
+- **Global `:focus-visible` ring** — all interactive elements show a clear, themed focus outline when navigated by keyboard. The ring colour follows the active tab's accent colour
+- **`aria-current="page"`** on the active tab button
+- **`aria-label`** added to nav, main content region, all action buttons, and the ticker banner
+- **`role="dialog"` + `aria-modal="true"`** on all modal dialogs, with `aria-label` set to the modal title
+- **`role="progressbar"`** with `aria-valuenow/min/max` on all ingredient progress bars
+- **`aria-pressed`** on category filter buttons in Recipes
+- **`htmlFor` + `id` pairing** on the Personal Notes textarea
+- Decorative emoji marked `aria-hidden="true"` throughout
+
+---
+
+## [1.2 Patch] — Bug Fixes & Code Cleanup
 
 ### Fixed
 - **Critical bug in `InventoryTab`** — `handleSave` was detached from the component due to a missing closing brace on `handleImportMaterials`, causing a runtime crash on any attempt to add or edit inventory items
@@ -19,8 +88,8 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [1.1 Patch] — Scrolling Ticker Banner & Extended Test Suite
 
 ### Added
-- **Scrolling ticker banner** — a marquee-style banner pinned to the top of the page with messages about active development. Colour transitions with the active tab's character theme
-- **6 new test files** — `GiftTracker.test.jsx`, `TagInput.test.jsx`, `QtyBtn.test.jsx`, `Btn.test.jsx`, `materials.test.js`, `residents.test.js` — covering component rendering and interactions, data integrity for all 13 residents and all 52 materials, and edge cases across the gift system and tag input
+- **Scrolling ticker banner** — a marquee-style banner pinned to the top of the page. Colour transitions with the active tab's character theme
+- **6 new test files** — `GiftTracker.test.jsx`, `TagInput.test.jsx`, `QtyBtn.test.jsx`, `Btn.test.jsx`, `materials.test.js`, `residents.test.js` covering component rendering, data integrity for all 13 residents and all 52 materials, and edge cases across the gift system and tag input
 
 ---
 
@@ -41,14 +110,14 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.9 Patch] — Gift Tracking & Inventory Editing
 
 ### Added
-- **🎀 Daily Gift Tracker** — each resident tracks up to 3 gifts per day. A compact counter sits on the resident card; the full tracker in the detail modal includes dot indicators, a Log Gift button, timestamp of last gift, and a manual Reset button for in-game reset items
-- **Automatic daily reset** — gift counts reset automatically at 7AM GMT (6AM during Daylight Saving Time). No manual action needed
-- **`giftReset.js` utility** — handles all reset logic, expiry checks, and time formatting in one place
-- **`GiftTracker` component** — reusable component used in both compact (card) and full (modal) form
-- **✏️ Edit inventory items** — each inventory card now has an edit button to update emoji, name, quantity, and tags without deleting and re-adding
+- **🎀 Daily Gift Tracker** — each resident tracks up to 3 gifts per day with a compact counter on the card and full tracker in the modal
+- **Automatic daily reset** — gift counts reset automatically at 7AM UTC every day
+- **`giftReset.js` utility** — handles all reset logic, expiry checks, and time formatting
+- **`GiftTracker` component** — reusable in both compact and full form
+- **✏️ Edit inventory items** — edit emoji, name, quantity, and tags without deleting and re-adding
 
 ### Changed
-- "View Gifts" button on resident cards renamed to **"View Details"** — more accurate since the modal covers abilities, gift tracking, and gifting cross-reference too
+- "View Gifts" button renamed to **"View Details"** — more accurate since the modal covers abilities, gift tracking, and gifting cross-reference
 
 ### Fixed
 - Inventory quantity now always displays even for items added before the qty field existed, defaulting to 0
@@ -61,13 +130,10 @@ All notable changes to this project, from the very beginning. Newest first.
 ### Added
 - **4 new character palettes** — Chococat (chocolate brown), Retsuko (red), Pekkle (sunny yellow), Hangyodon (ocean teal)
 
-### Changed
-- Chococat, Retsuko, Pekkle, and Hangyodon reassigned from borrowed palettes to their own
-
 ### Fixed
 - Portrait now **floats between the outer tint and inner white card** — eliminates the thin white line visual bug at the top of resident cards
 - Inner white card given a subtle coloured border so the edge is always visible on light palettes
-- Light palette backgrounds (Cinnamoroll, Pochacco, Hangyodon, Pekkle) made more saturated so the tint is clearly visible
+- Light palette backgrounds made more saturated so the tint is clearly visible
 
 ---
 
@@ -82,13 +148,13 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ### Added
 - **Tag system** — items in Inventory and Catalogue can now have up to 4 tags each, matching the in-game tag mechanic
-- **`TagPill` component** — tags display as emoji pills everywhere in the app. Hover any pill to see the full tag name as a tooltip
-- **`TagInput` component** — multi-tag input with autocomplete, keyboard support (Enter or comma to add, Backspace to remove), and a 4-tag maximum enforced
-- **Tag autocomplete** — suggestions are built from your existing tagged items as you play, so the tag list grows organically without needing to pre-load anything
-- **Tag filter bars** — Inventory and Catalogue both have a tag filter bar that appears once you have tagged items. Click a tag to filter, click again to clear
-- **Tag emoji map** — 33 tags mapped to emojis in `constants.js`. Unknown tags fall back to displaying as text
-- **Resident liked tags** — each of the 13 residents now has 3 hardcoded liked tags displayed as character-coloured emoji pills on their card
-- **🎒 Giftable from Inventory** — new section in the resident detail modal that automatically cross-references the resident's liked tags against your inventory and lists every item you currently have that qualifies as a gift, with the matching tags highlighted
+- **`TagPill` component** — tags display as emoji pills everywhere in the app
+- **`TagInput` component** — multi-tag input with autocomplete, keyboard support, and a 4-tag maximum
+- **Tag autocomplete** — suggestions are built from your existing tagged items as you play
+- **Tag filter bars** — Inventory and Catalogue both have a tag filter bar
+- **Tag emoji map** — 33 tags mapped to emojis in `constants.js`
+- **Resident liked tags** — each of the 13 residents now has 3 hardcoded liked tags
+- **🎒 Giftable from Inventory** — new section in the resident detail modal that cross-references liked tags against inventory
 
 ### Changed
 - Tags are included in search across Inventory and Catalogue
@@ -98,56 +164,43 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.5 Patch] — Portraits, Static Roster & Card Redesign
 
 ### Added
-- **In-game portraits** — all 13 residents now have their official wiki portrait hardcoded, displayed as a circular image at the top of each card
+- **In-game portraits** — all 13 residents now have their official wiki portrait hardcoded
 - **🐾 fallback** — shown if a portrait ever fails to load
 
 ### Changed
-- **Layered card design** — resident cards now use a soft character colour tint as the outer background, with a clean white inner card on top. The old gradient bar at the top is gone
-- **Resident name** now renders in the character's solid colour inside the white inner card
-- **Resident liked tags** displayed as soft character-coloured pills below the name (added later in same session)
+- **Layered card design** — soft character colour tint outer background, clean white inner card on top
 - **Edit and Remove buttons removed** — the resident roster is now fully static and read-only
-- **Add Resident button removed** — the roster is fixed at 13 residents
 - **`ResidentForm` deleted** — no longer needed since residents are fully hardcoded
-- **Image URL field removed** from forms — portraits are hardcoded
 
 ### Fixed
 - `ResidentCard.test.jsx` fully rewritten to match the new read-only component API
-- `ResidentForm.test.jsx` deleted (component no longer exists)
-- Dead exports (`normaliseAbilities`, `ACCENT_OPTIONS`) removed from `constants.js`
-- `ExportImport` now correctly includes `hkia_catalogue` in both export and import (it was previously being silently dropped)
+- Dead exports removed from `constants.js`
+- `ExportImport` now correctly includes `hkia_catalogue` in both export and import
 - Tab ID corrected from `"furniture"` to `"catalogue"` in `App.jsx`
-- Orphaned `reward` tag style removed from `Display.jsx`
 
 ---
 
 ## [0.4 Patch] — Abilities Overhaul & Cleanup
 
 ### Added
-- **Tiered ability system** — abilities now have multiple levels, each with its own unlock friendship level and description. All data hardcoded from game data across all 13 residents
-- **Per-level toggle** — each ability level can be individually marked as unlocked in the detail modal
-- **Ability pill states** — cards now show three states: ○ not started, ◑ partially unlocked (with X/Y count), ✓ fully unlocked
-
-### Changed
-- Ability input fields removed from `ResidentForm` — abilities are now static game data
-- `handleAbilityToggle` updated to take `(id, abilityIndex, levelIndex)` instead of `(id, index)`
-- `normaliseAbility` updated to handle the new tiered structure with backward compatibility
+- **Tiered ability system** — abilities now have multiple levels, each with its own unlock friendship level and description
+- **Per-level toggle** — each ability level can be individually marked as unlocked
+- **Ability pill states** — ○ not started, ◑ partially unlocked (X/Y count), ✓ fully unlocked
 
 ### Removed
-- **Friendship Rewards** removed entirely from the app — the section, the form field, the data, and all references
+- **Friendship Rewards** removed entirely — the section, form field, data, and all references
 
 ---
 
 ## [0.3 Patch] — Gift System & Static Game Data
 
 ### Added
-- **Loved Gift** — each resident now has a single top-tier loved gift (❤️❤️❤️) displayed in a pink highlighted box in the detail modal
-- **Liked Gifts with heart values** — gifts are now objects with `heartValue` (1–3) and `friendshipValue` for tie-breaking, sorted highest to lowest
-- **Heart display** — ❤️ emojis shown per gift, with friendship value shown for reference
+- **Loved Gift** — each resident now has a single top-tier loved gift (❤️❤️❤️)
+- **Liked Gifts with heart values** — gifts are objects with `heartValue` and `friendshipValue`, sorted highest to lowest
 - **Full gift data hardcoded** for all 13 residents from game data
 
 ### Changed
 - `gifts` field changed from `string[]` to `{ name, heartValue, friendshipValue }[]`
-- Liked Gifts input removed from `ResidentForm` — gifts are now static game data
 - "Item Received" renamed to **"Return Gift"** throughout the app
 
 ---
@@ -155,15 +208,13 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.2 Patch] — 13 Residents, Availability Filter & Card Polish
 
 ### Added
-- **13 pre-loaded residents** — 6 immediately available, 7 encountered elsewhere, all with real game data (birthday, max level, return gift, color)
-- **Location hints** — encountered elsewhere residents show a 🗺️ hint on their card indicating where to find them
-- **Availability filter** — three filter buttons: 🌺 All, ⭐ Immediately Available, 🗺️ Encountered Elsewhere. Stacks with search
-- **README** — friendly, player-voice readme written covering all features, tech stack, and how to add new Sanrio palettes
+- **13 pre-loaded residents** — 6 immediately available, 7 encountered elsewhere, all with real game data
+- **Location hints** on encountered elsewhere residents
+- **Availability filter** — All, ⭐ Immediately Available, 🗺️ Encountered Elsewhere
+- **README** — friendly player-voice readme covering all features and tech stack
 
 ### Changed
-- Gradient bar height increased from 6px to 18px
-- Card border radius changed from 24px to 12px (slightly more boxy)
-- **"Furniture" tab renamed to "Catalogue"** throughout the app. Internal tab ID kept as `"furniture"` for localStorage compatibility (later corrected to `"catalogue"`)
+- **"Furniture" tab renamed to "Catalogue"** throughout the app
 
 ---
 
@@ -171,51 +222,36 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ### Added
 - **React 18 + Vite** project scaffolded
-- **`useLocalStorage` hook** — drop-in useState replacement that persists to localStorage, supports functional updates
+- **`useLocalStorage` hook** — drop-in useState replacement that persists to localStorage
 - **9 Sanrio colour palettes** — Hello Kitty, My Melody, Kuromi, Cinnamoroll, Pompompurin, Keroppi, Pochacco, Badtz-Maru, Little Twin Stars
-- **Dynamic page background** — full-page gradient that transitions to the active tab's character colour
-- **Dynamic tab buttons** — each tab highlights in its own character's solid colour when active
-- **Dynamic scrollbar** — colour matches the active tab
+- **Dynamic page background**, **tab buttons**, and **scrollbar** that all respond to the active character theme
 
 #### 🐱 Residents Tab
-- Add, edit, and delete residents
-- Sanrio character colour picker per resident
-- Profile picture via image URL with 🐾 fallback
-- Birthday, max friendship level, return gift fields
-- Friendship level tracker with +/− buttons and colour-matched progress bar
-- Companion abilities — up to 3 per resident, togglable as unlocked
-- Detail modal showing liked gifts, friendship rewards, and abilities
+- Add, edit, and delete residents with Sanrio colour picker, portrait, birthday, max friendship level, return gift, and companion abilities
+- Friendship level tracker with +/− buttons and progress bar
+- Detail modal with liked gifts, friendship rewards, and abilities
 - Search by name or gift
-- Colour migration system — old colour keys (`coral`, `mint`, `lav`, `lemon`) auto-upgrade to Sanrio palette keys on load
 
 #### 🎒 Inventory Tab
-- Add, edit, and delete items with emoji, name, category, quantity
-- +/− quantity controls
-- Colour-coded category badges
-- Search by name or category
+- Add, edit, and delete items with emoji, name, category, and quantity
+- +/− quantity controls and colour-coded category badges
 
 #### 📖 Recipes Tab
-- Add, edit, and delete recipes with ingredients, category, and result
+- Add recipes with ingredients, category, and result
 - Ingredient autocomplete from inventory
-- Live progress bar per recipe card showing ingredients ready
-- 🔍 Check Ingredients modal with full ✅/❌ checklist and "still needed" summary
-- 🎉 Confetti celebration in Hello Kitty colours when all ingredients are available
+- Live progress bar per recipe card and 🔍 Check Ingredients modal
+- 🎉 Confetti celebration when all ingredients are available
 
 #### 🪑 Catalogue Tab
-- Add, edit, and delete catalogue/furniture items
-- Owned / Not Owned toggle per item with dimming for unowned
+- Add furniture items and track owned/not owned
 - Items grouped by category with per-group owned count
-- Global owned counter in the header
 - Filter by owned status
-- Toffee Brown & Cream colour theme
 
 #### 🌐 App-wide
-- Export & Import — full island data as JSON (residents, inventory, recipes, catalogue)
+- Export & Import full island data as JSON
 - localStorage auto-save on every change
 - Toast notifications for save and delete actions
-- `uid()` helper for generating unique IDs
-- Shared constants for categories, colours, and seed data
-- **34 automated tests** with Vitest + React Testing Library covering helpers, rendering, interactions, and form validation
+- **34 automated tests** with Vitest + React Testing Library
 
 ---
 

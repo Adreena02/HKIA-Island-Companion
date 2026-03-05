@@ -112,10 +112,10 @@ export function InventoryTab({ showToast }) {
     <>
       {/* Tab header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
-        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>
+        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "clamp(1.1rem, 4vw, 1.4rem)", fontWeight: 700 }}>
           🎒 My Inventory
         </span>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <Btn variant="ghost" onClick={handleImportMaterials}>📦 Import Materials</Btn>
           <Btn variant="mint" onClick={openAdd}>＋ Add Item</Btn>
         </div>
@@ -137,7 +137,7 @@ export function InventoryTab({ showToast }) {
       )}
 
       {/* Inventory cards grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(168px, 100%), 1fr))", gap: 14 }}>
         {filtered.length
           ? filtered.map((item) => (
               <div key={item.id} style={{

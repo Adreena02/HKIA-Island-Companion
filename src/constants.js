@@ -29,6 +29,7 @@ export const migrateResident = (r) => {
 
 // Card accent bar gradients (horizontal, top bar of each card)
 export const ACCENT_GRADIENTS = {
+  home:        "linear-gradient(90deg, #f97316, #fdba74)",
   hellokitty:  "linear-gradient(90deg, #e8003c, #ff6b8a)",
   mymelody:    "linear-gradient(90deg, #f5a0c8, #f9c8dd)",
   kuromi:      "linear-gradient(90deg, #7c3aed, #c084fc)",
@@ -47,6 +48,7 @@ export const ACCENT_GRADIENTS = {
 
 // Full-page background gradients (character color → white, top to bottom)
 export const ACCENT_BG_GRADIENTS = {
+  home:        "linear-gradient(180deg, #fed7aa 0%, #fff7ed 50%, #ffffff 100%)",
   hellokitty:  "linear-gradient(180deg, #ffd6df 0%, #fff0f3 50%, #ffffff 100%)",
   mymelody:    "linear-gradient(180deg, #fce4f0 0%, #fdf0f7 50%, #ffffff 100%)",
   kuromi:      "linear-gradient(180deg, #ede9fe 0%, #f5f3ff 50%, #ffffff 100%)",
@@ -65,6 +67,7 @@ export const ACCENT_BG_GRADIENTS = {
 
 // Solid accent colours (tab buttons, scrollbar, header title)
 export const ACCENT_SOLID = {
+  home:        "#f97316",
   hellokitty:  "#e8003c",
   mymelody:    "#f472b6",
   kuromi:      "#7c3aed",

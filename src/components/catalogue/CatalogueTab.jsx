@@ -108,7 +108,7 @@ function FurnitureCard({ item, onEdit, onDelete, onToggleOwned }) {
         transform: hov ? "translateY(-2px)" : "none",
         transition: "all 0.2s ease",
         opacity: owned ? 1 : 0.72,
-        display: "flex", alignItems: "center", gap: 14,
+        display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
       }}
     >
       {/* Accent bar */}
@@ -261,12 +261,14 @@ export function CatalogueTab({ showToast }) {
   };
 
   const filterBtnStyle = (val) => ({
-    fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "0.85rem",
-    padding: "6px 16px", borderRadius: 50, border: "none", cursor: "pointer",
+    fontFamily: "'Baloo 2', cursive", fontWeight: 700,
+    fontSize: "clamp(0.75rem, 2.5vw, 0.85rem)",
+    padding: "6px 14px", borderRadius: 50, border: "none", cursor: "pointer",
     background: filterOwned === val ? `linear-gradient(90deg, ${TOFFEE}, ${TOFFEE2})` : "rgba(255,255,255,0.6)",
     color: filterOwned === val ? "#fff" : "#7a6a6a",
     boxShadow: filterOwned === val ? `0 2px 10px ${TOFFEE}44` : "none",
     transition: "all 0.2s ease",
+    whiteSpace: "nowrap",
   });
 
   return (
@@ -274,7 +276,7 @@ export function CatalogueTab({ showToast }) {
       {/* Header row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
         <div>
-          <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>🪑 Catalogue</span>
+          <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "clamp(1.1rem, 4vw, 1.4rem)", fontWeight: 700 }}>🪑 Catalogue</span>
           <span style={{ marginLeft: 10, fontSize: "0.85rem", color: "#b09070", fontWeight: 600 }}>
             {totalOwned}/{furniture.length} owned
           </span>
@@ -289,10 +291,10 @@ export function CatalogueTab({ showToast }) {
 
       {/* Search + filter */}
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12, alignItems: "center" }}>
-        <div style={{ flex: 1, minWidth: 200 }}>
+        <div style={{ flex: 1, minWidth: "min(200px, 100%)" }}>
           <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 Search furniture or tags..." />
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           <button style={filterBtnStyle("all")}      onClick={() => setFilterOwned("all")}>All</button>
           <button style={filterBtnStyle("owned")}    onClick={() => setFilterOwned("owned")}>✓ Owned</button>
           <button style={filterBtnStyle("notowned")} onClick={() => setFilterOwned("notowned")}>○ Not Owned</button>

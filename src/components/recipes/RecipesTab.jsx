@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { Btn } from "../ui/Btn";
 import { Modal } from "../ui/Modal";
@@ -11,10 +11,6 @@ const BLANK_FORM = { emoji: "", name: "", result: "", category: "Cooking" };
 
 // ─── Ingredient status helper ─────────────────────────────────────────────────
 
-/**
- * Given a recipe's ingredient list and the player's inventory,
- * returns enriched ingredient objects with have/need status.
- */
 function checkIngredients(ingredients, inventory) {
   return ingredients.map((ing) => {
     const invItem = inventory.find(
@@ -67,11 +63,13 @@ function RecipeDetailModal({ recipe, inventory, open, onClose }) {
           <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a" }}>
             Ingredients Ready
           </span>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: canCraft ? "#22c55e" : "#e8637c" }}>
+          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: canCraft ? "#22c55e" : "#e8637c" }}
+                aria-label={`${satisfied} of ${total} ingredients ready`}>
             {satisfied}/{total}
           </span>
         </div>
-        <div style={{ height: 10, borderRadius: 10, background: "#f2eee8", overflow: "hidden" }}>
+        <div style={{ height: 10, borderRadius: 10, background: "#f2eee8", overflow: "hidden" }}
+             role="progressbar" aria-valuenow={satisfied} aria-valuemin={0} aria-valuemax={total}>
           <div style={{
             height: "100%", borderRadius: 10,
             background: canCraft
@@ -100,17 +98,12 @@ function RecipeDetailModal({ recipe, inventory, open, onClose }) {
             background: ing.satisfied ? "rgba(34,197,94,0.08)" : "rgba(232,99,124,0.08)",
             border: `1px solid ${ing.satisfied ? "rgba(34,197,94,0.2)" : "rgba(232,99,124,0.2)"}`,
           }}>
-            {/* Status icon */}
-            <span style={{ fontSize: "1rem", flexShrink: 0 }}>
+            <span style={{ fontSize: "1rem", flexShrink: 0 }} aria-hidden="true">
               {ing.satisfied ? "✅" : "❌"}
             </span>
-
-            {/* Name */}
             <span style={{ flex: 1, fontWeight: 600, fontSize: "0.9rem", color: "#3a2e2e" }}>
               {ing.name}
             </span>
-
-            {/* Have / Need */}
             <div style={{ textAlign: "right", flexShrink: 0 }}>
               <span style={{ fontSize: "0.85rem", fontWeight: 700, color: ing.satisfied ? "#22c55e" : "#e8637c" }}>
                 {ing.have}
@@ -145,23 +138,42 @@ function RecipeDetailModal({ recipe, inventory, open, onClose }) {
 // ─── Recipes Tab ──────────────────────────────────────────────────────────────
 
 export function RecipesTab({ showToast }) {
-  const [recipes, setRecipes]         = useLocalStorage("hkia_recipes", SEED_RECIPES);
-  const [inventory]                   = useLocalStorage("hkia_inventory", SEED_INVENTORY);
-  const [search, setSearch]           = useState("");
-  const [modalOpen, setModalOpen]     = useState(false);
+  const [recipes, setRecipes]           = useLocalStorage("hkia_recipes", SEED_RECIPES);
+  const [inventory]                     = useLocalStorage("hkia_inventory", SEED_INVENTORY);
+  const [search, setSearch]             = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [modalOpen, setModalOpen]       = useState(false);
   const [detailRecipe, setDetailRecipe] = useState(null);
-  const [editing, setEditing]         = useState(null);
-  const [form, setForm]               = useState(BLANK_FORM);
-  const [ingredients, setIngredients] = useState([{ id: uid(), name: "", qty: 1 }]);
+  const [editing, setEditing]           = useState(null);
+  const [form, setForm]                 = useState(BLANK_FORM);
+  const [ingredients, setIngredients]   = useState([{ id: uid(), name: "", qty: 1 }]);
 
-  // Inventory names for autocomplete
   const inventoryNames = inventory.map((i) => i.name);
 
-  const filtered = recipes.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase()) ||
-    r.category.toLowerCase().includes(search.toLowerCase()) ||
-    r.ingredients.some((i) => i.name.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Enrich recipes with craftability
+  const enriched = useMemo(() => recipes.map((r) => {
+    const checked  = checkIngredients(r.ingredients, inventory);
+    const ready    = checked.filter((i) => i.satisfied).length;
+    const total    = checked.length;
+    const canCraft = ready === total && total > 0;
+    return { ...r, ready, total, canCraft };
+  }), [recipes, inventory]);
+
+  // Filter then sort: craftable first
+  const filtered = useMemo(() => {
+    return enriched
+      .filter((r) => {
+        const matchSearch =
+          r.name.toLowerCase().includes(search.toLowerCase()) ||
+          r.category.toLowerCase().includes(search.toLowerCase()) ||
+          r.ingredients.some((i) => i.name.toLowerCase().includes(search.toLowerCase()));
+        const matchCat = activeCategory === "All" || r.category === activeCategory;
+        return matchSearch && matchCat;
+      })
+      .sort((a, b) => b.canCraft - a.canCraft || b.ready / (b.total || 1) - a.ready / (a.total || 1));
+  }, [enriched, search, activeCategory]);
+
+  const craftableCount = enriched.filter((r) => r.canCraft).length;
 
   const openAdd = () => {
     setEditing(null);
@@ -210,98 +222,146 @@ export function RecipesTab({ showToast }) {
     showToast("🗑️ Recipe deleted");
   };
 
+  const categories = ["All", ...RECIPE_CATEGORIES];
+
   return (
     <>
       {/* Tab header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
-        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>
-          📖 Recipe Book
-        </span>
-        <Btn variant="lav" onClick={openAdd}>＋ Add Recipe</Btn>
+        <div>
+          <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>
+            📖 Recipe Book
+          </span>
+          {craftableCount > 0 && (
+            <span style={{
+              marginLeft: 10, fontSize: "0.8rem", fontWeight: 700,
+              padding: "3px 10px", borderRadius: 50,
+              background: "rgba(34,197,94,0.12)", color: "#16a34a",
+            }}>
+              ✨ {craftableCount} ready to craft
+            </span>
+          )}
+        </div>
+        <Btn variant="lav" onClick={openAdd} aria-label="Add new recipe">＋ Add Recipe</Btn>
       </div>
 
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 Search recipes or ingredients..." />
 
-      {/* Recipe cards grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 18 }}>
-        {filtered.length ? filtered.map((r) => {
-          const checked  = checkIngredients(r.ingredients, inventory);
-          const ready    = checked.filter((i) => i.satisfied).length;
-          const total    = checked.length;
-          const canCraft = ready === total && total > 0;
+      {/* Category filter */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }} role="group" aria-label="Filter by category">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            aria-pressed={activeCategory === cat}
+            style={{
+              fontFamily: "'Baloo 2', cursive", fontWeight: 700,
+              fontSize: "clamp(0.75rem, 2.5vw, 0.85rem)",
+              padding: "6px 14px", borderRadius: 50, border: "none", cursor: "pointer",
+              background: activeCategory === cat
+                ? (cat === "All" ? "#9333ea" : RECIPE_CAT_COLORS[cat] ?? "#f2eee8")
+                : "rgba(255,255,255,0.6)",
+              color: activeCategory === cat ? (cat === "All" ? "#fff" : "#3a2e2e") : "#7a6a6a",
+              boxShadow: activeCategory === cat ? "0 2px 10px rgba(180,130,130,0.2)" : "none",
+              backdropFilter: "blur(8px)",
+              transition: "all 0.2s ease",
+              outline: "none",
+              whiteSpace: "nowrap",
+            }}
+          >{cat}</button>
+        ))}
+      </div>
 
-          return (
-            <div
-              key={r.id}
-              style={{
-                background: "#fffdf9", borderRadius: 20, padding: 20,
-                border: "2px solid rgba(255,255,255,0.9)",
-                boxShadow: "0 4px 18px rgba(180,130,130,0.15)",
-                transition: "transform 0.2s",
-                display: "flex", flexDirection: "column", gap: 12,
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
-            >
-              {/* Card header */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: "1.6rem" }}>{r.emoji}</span>
-                  <div>
-                    <div style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.1rem", fontWeight: 700 }}>{r.name}</div>
-                    {r.result && <div style={{ fontSize: "0.85rem", color: "#7a6a6a" }}>→ {r.result}</div>}
-                  </div>
+      {/* Recipe cards grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(300px, 100%), 1fr))", gap: 18 }}>
+        {filtered.length ? filtered.map((r) => (
+          <div
+            key={r.id}
+            style={{
+              background: "#fffdf9", borderRadius: 20, padding: 20,
+              border: r.canCraft ? "2px solid rgba(34,197,94,0.35)" : "2px solid rgba(255,255,255,0.9)",
+              boxShadow: r.canCraft ? "0 4px 18px rgba(34,197,94,0.15)" : "0 4px 18px rgba(180,130,130,0.15)",
+              transition: "transform 0.2s",
+              display: "flex", flexDirection: "column", gap: 12,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+          >
+            {/* Card header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: "1.6rem" }} aria-hidden="true">{r.emoji}</span>
+                <div>
+                  <div style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.1rem", fontWeight: 700 }}>{r.name}</div>
+                  {r.result && <div style={{ fontSize: "0.85rem", color: "#7a6a6a" }}>→ {r.result}</div>}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+                <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+                  {r.canCraft && (
+                    <span style={{
+                      fontSize: "0.68rem", fontWeight: 700, padding: "2px 8px", borderRadius: 50,
+                      background: "rgba(34,197,94,0.15)", color: "#16a34a",
+                    }} aria-label="Ready to craft">✨ Ready</span>
+                  )}
                   <span style={{
                     fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
                     padding: "3px 10px", borderRadius: 50,
                     background: RECIPE_CAT_COLORS[r.category] || "#f2eee8", color: "#3a2e2e",
                   }}>{r.category}</span>
-                  <div style={{ display: "flex", gap: 5 }}>
-                    <Btn variant="ghost" small onClick={() => openEdit(r)}>✏️</Btn>
-                    <Btn variant="danger" small onClick={() => handleDelete(r.id)}>🗑️</Btn>
-                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 5 }}>
+                  <Btn variant="ghost" small onClick={() => openEdit(r)} aria-label={`Edit ${r.name}`}>✏️</Btn>
+                  <Btn variant="danger" small onClick={() => handleDelete(r.id)} aria-label={`Delete ${r.name}`}>🗑️</Btn>
                 </div>
               </div>
-
-              {/* Mini progress bar */}
-              {total > 0 && (
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontSize: "0.72rem", color: "#7a6a6a", fontWeight: 600 }}>Ingredients</span>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: canCraft ? "#22c55e" : "#e8637c" }}>
-                      {ready}/{total} ready
-                    </span>
-                  </div>
-                  <div style={{ height: 6, borderRadius: 6, background: "#f2eee8", overflow: "hidden" }}>
-                    <div style={{
-                      height: "100%", borderRadius: 6,
-                      background: canCraft ? "linear-gradient(90deg, #22c55e, #86efac)" : "linear-gradient(90deg, #f5a0c8, #e8637c)",
-                      width: `${(ready / total) * 100}%`,
-                      transition: "width 0.4s ease",
-                    }} />
-                  </div>
-                </div>
-              )}
-
-              {/* Check button */}
-              <button
-                onClick={() => setDetailRecipe(r)}
-                style={{
-                  fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: "0.85rem",
-                  padding: "7px 0", borderRadius: 50, border: "2px solid #f2eee8",
-                  background: "transparent", cursor: "pointer", color: "#7a6a6a",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#f9f5f0"; e.currentTarget.style.borderColor = "#e8d8d8"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "#f2eee8"; }}
-              >
-                🔍 Check Ingredients
-              </button>
             </div>
-          );
-        }) : <EmptyState icon="📖" title="No recipes yet!" sub="Add your first island recipe above." />}
+
+            {/* Mini progress bar */}
+            {r.total > 0 && (
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                  <span style={{ fontSize: "0.72rem", color: "#7a6a6a", fontWeight: 600 }}>Ingredients</span>
+                  <span style={{ fontSize: "0.72rem", fontWeight: 700, color: r.canCraft ? "#22c55e" : "#e8637c" }}>
+                    {r.ready}/{r.total} ready
+                  </span>
+                </div>
+                <div style={{ height: 6, borderRadius: 6, background: "#f2eee8", overflow: "hidden" }}
+                     role="progressbar" aria-valuenow={r.ready} aria-valuemin={0} aria-valuemax={r.total}
+                     aria-label={`${r.ready} of ${r.total} ingredients ready`}>
+                  <div style={{
+                    height: "100%", borderRadius: 6,
+                    background: r.canCraft ? "linear-gradient(90deg, #22c55e, #86efac)" : "linear-gradient(90deg, #f5a0c8, #e8637c)",
+                    width: `${(r.ready / r.total) * 100}%`,
+                    transition: "width 0.4s ease",
+                  }} />
+                </div>
+              </div>
+            )}
+
+            {/* Check button */}
+            <button
+              onClick={() => setDetailRecipe(r)}
+              aria-label={`Check ingredients for ${r.name}`}
+              style={{
+                fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: "0.85rem",
+                padding: "7px 0", borderRadius: 50, border: "2px solid #f2eee8",
+                background: "transparent", cursor: "pointer", color: "#7a6a6a",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#f9f5f0"; e.currentTarget.style.borderColor = "#e8d8d8"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "#f2eee8"; }}
+            >
+              🔍 Check Ingredients
+            </button>
+          </div>
+        )) : (
+          <EmptyState
+            icon="📖"
+            title={activeCategory !== "All" ? `No ${activeCategory} recipes yet!` : "No recipes yet!"}
+            sub={activeCategory !== "All" ? `Try a different category, or add one above.` : "Add your first island recipe above."}
+          />
+        )}
       </div>
 
       {/* Add / Edit modal */}
@@ -319,11 +379,10 @@ export function RecipesTab({ showToast }) {
           <Select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} options={RECIPE_CATEGORIES} />
         </FormGroup>
 
-        {/* Dynamic ingredient builder with autocomplete */}
         <FormGroup label="Ingredients" hint="Type freely or pick from your inventory">
           {ingredients.map((ing) => (
-            <div key={ing.id} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 7, position: "relative" }}>
-              <div style={{ flex: 1, position: "relative" }}>
+            <div key={ing.id} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 7 }}>
+              <div style={{ flex: 1 }}>
                 <Input
                   value={ing.name}
                   onChange={(e) => updateIng(ing.id, "name", e.target.value)}
@@ -343,7 +402,7 @@ export function RecipesTab({ showToast }) {
                 min={1}
                 style={{ width: 70 }}
               />
-              <Btn variant="danger" small onClick={() => removeIngRow(ing.id)}>✕</Btn>
+              <Btn variant="danger" small onClick={() => removeIngRow(ing.id)} aria-label="Remove ingredient">✕</Btn>
             </div>
           ))}
           <Btn variant="ghost" small onClick={addIngRow} style={{ marginTop: 4 }}>＋ Add Ingredient</Btn>
@@ -355,7 +414,6 @@ export function RecipesTab({ showToast }) {
         </div>
       </Modal>
 
-      {/* Recipe detail / ingredient check modal */}
       <RecipeDetailModal
         recipe={detailRecipe}
         inventory={inventory}

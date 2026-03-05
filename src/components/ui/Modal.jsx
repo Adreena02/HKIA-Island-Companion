@@ -29,14 +29,14 @@ export function Modal({ open, onClose, title, children }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 20,
+        padding: "12px",
         animation: "fadeIn 0.2s ease",
       }}
     >
       <div style={{
         background: "#fffdf9",
         borderRadius: 20,
-        padding: 28,
+        padding: "clamp(16px, 4vw, 28px)",
         width: "100%",
         maxWidth: 480,
         boxShadow: "0 20px 60px rgba(100,60,60,0.2)",
@@ -44,12 +44,16 @@ export function Modal({ open, onClose, title, children }) {
         maxHeight: "90vh",
         overflowY: "auto",
         border: "2px solid rgba(255,255,255,0.9)",
-      }}>
+      }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
         {/* Modal header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <h2 style={{
             fontFamily: "'Baloo 2', cursive",
-            fontSize: "1.4rem",
+            fontSize: "clamp(1.1rem, 4vw, 1.4rem)",
             fontWeight: 700,
             color: "#3a2e2e",
             margin: 0,
@@ -67,6 +71,7 @@ export function Modal({ open, onClose, title, children }) {
               color: "#7a6a6a",
               lineHeight: 1,
               padding: 4,
+              flexShrink: 0,
             }}
           >
             ✕
