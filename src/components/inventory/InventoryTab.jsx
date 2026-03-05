@@ -16,11 +16,11 @@ export function InventoryTab({ showToast }) {
   const [search, setSearch]       = useState("");
   const [activeTag, setActiveTag] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing]     = useState(null); // null = adding, item = editing
   const [form, setForm]           = useState(BLANK_FORM);
 
   const setField = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  // Collect all known tags across all items for autocomplete
   const allTags = useMemo(() => {
     const set = new Set();
     inventory.forEach((item) => (item.tags ?? []).forEach((t) => set.add(t)));
@@ -39,7 +39,7 @@ export function InventoryTab({ showToast }) {
   const changeQty = (id, delta) => {
     setInventory((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, qty: Math.max(0, item.qty + delta) } : item
+        item.id === id ? { ...item, qty: Math.max(0, (item.qty ?? 0) + delta) } : item
       )
     );
   };
@@ -49,22 +49,51 @@ export function InventoryTab({ showToast }) {
     showToast("🗑️ Item removed");
   };
 
+  const openAdd = () => {
+    setEditing(null);
+    setForm(BLANK_FORM);
+    setModalOpen(true);
+  };
+
+  const openEdit = (item) => {
+    setEditing(item);
+    setForm({
+      emoji:    item.emoji,
+      name:     item.name,
+      category: item.category,
+      qty:      item.qty,
+      tags:     item.tags ?? [],
+    });
+    setModalOpen(true);
+  };
+
   const handleSave = () => {
     if (!form.name.trim()) return;
-    setInventory((prev) => [
-      ...prev,
-      {
+    if (editing) {
+      setInventory((prev) => prev.map((item) =>
+        item.id === editing.id ? {
+          ...item,
+          emoji: form.emoji.trim() || "📦",
+          name:  form.name.trim(),
+          qty:   parseInt(form.qty) || 0,
+          tags:  form.tags,
+        } : item
+      ));
+      showToast("✅ Item updated!");
+    } else {
+      setInventory((prev) => [...prev, {
         id:       uid(),
         emoji:    form.emoji.trim() || "📦",
         name:     form.name.trim(),
         category: form.category,
         qty:      parseInt(form.qty) || 1,
         tags:     form.tags,
-      },
-    ]);
+      }]);
+      showToast("🎒 Item added!");
+    }
     setModalOpen(false);
     setForm(BLANK_FORM);
-    showToast("🎒 Item added!");
+    setEditing(null);
   };
 
   return (
@@ -74,7 +103,7 @@ export function InventoryTab({ showToast }) {
         <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>
           🎒 My Inventory
         </span>
-        <Btn variant="mint" onClick={() => setModalOpen(true)}>＋ Add Item</Btn>
+        <Btn variant="mint" onClick={openAdd}>＋ Add Item</Btn>
       </div>
 
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 Search items, categories, or tags..." />
@@ -106,6 +135,14 @@ export function InventoryTab({ showToast }) {
                 onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
               >
+                {/* Edit button */}
+                <button onClick={() => openEdit(item)} aria-label={`Edit ${item.name}`}
+                  style={{ position: "absolute", top: 8, left: 8, background: "none", border: "none", cursor: "pointer", fontSize: "0.85rem", opacity: 0.3, transition: "opacity 0.15s" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.3"; }}
+                >✏️</button>
+
+                {/* Delete button */}
                 <button onClick={() => handleDelete(item.id)} aria-label={`Remove ${item.name}`}
                   style={{ position: "absolute", top: 8, right: 8, background: "none", border: "none", cursor: "pointer", fontSize: "0.85rem", opacity: 0.3, transition: "opacity 0.15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
@@ -121,7 +158,6 @@ export function InventoryTab({ showToast }) {
                   background: INVENTORY_CAT_COLORS[item.category] || "#f2eee8", color: "#3a2e2e",
                 }}>{item.category}</span>
 
-                {/* Tag pills */}
                 {(item.tags ?? []).length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center" }}>
                     {item.tags.map((tag) => <TagPill key={tag} tag={tag} />)}
@@ -130,8 +166,8 @@ export function InventoryTab({ showToast }) {
 
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <QtyBtn onClick={() => changeQty(item.id, -1)}>−</QtyBtn>
-                  <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.1rem", fontWeight: 700, minWidth: 32, textAlign: "center" }}>
-                    {item.qty}
+                  <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.1rem", fontWeight: 700, minWidth: 32, textAlign: "center", color: "#3a2e2e" }}>
+                    {item.qty ?? 0}
                   </span>
                   <QtyBtn onClick={() => changeQty(item.id, 1)}>＋</QtyBtn>
                 </div>
@@ -141,17 +177,20 @@ export function InventoryTab({ showToast }) {
         }
       </div>
 
-      {/* Add item modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title="🎒 Add Inventory Item">
+      {/* Add / Edit modal */}
+      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditing(null); setForm(BLANK_FORM); }}
+        title={editing ? "✏️ Edit Item" : "🎒 Add Inventory Item"}>
         <FormGroup label="Emoji Icon">
           <Input value={form.emoji} onChange={setField("emoji")} placeholder="e.g. 🍎" />
         </FormGroup>
         <FormGroup label="Item Name *">
           <Input value={form.name} onChange={setField("name")} placeholder="e.g. Apple" />
         </FormGroup>
-        <FormGroup label="Category">
-          <Select value={form.category} onChange={setField("category")} options={ITEM_CATEGORIES} />
-        </FormGroup>
+        {!editing && (
+          <FormGroup label="Category">
+            <Select value={form.category} onChange={setField("category")} options={ITEM_CATEGORIES} />
+          </FormGroup>
+        )}
         <FormGroup label="Tags" hint="Tags help match items to resident preferences">
           <TagInput
             tags={form.tags}
@@ -163,8 +202,8 @@ export function InventoryTab({ showToast }) {
           <Input type="number" value={form.qty} onChange={setField("qty")} min={0} />
         </FormGroup>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20 }}>
-          <Btn variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Btn>
-          <Btn variant="mint" onClick={handleSave}>💾 Save</Btn>
+          <Btn variant="ghost" onClick={() => { setModalOpen(false); setEditing(null); setForm(BLANK_FORM); }}>Cancel</Btn>
+          <Btn variant="mint" onClick={handleSave}>💾 {editing ? "Save Changes" : "Save"}</Btn>
         </div>
       </Modal>
     </>
