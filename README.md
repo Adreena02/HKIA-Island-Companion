@@ -23,16 +23,18 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 **On the resident card:**
 - Filter between ⭐ Immediately Available and 🗺️ Encountered Elsewhere, or view everyone at once
 - Search by name or gift
-- Each card uses a **layered design** — soft character colour tint on the outside, clean white inner card inside
+- Each card uses a **layered design** — soft character colour tint on the outside, clean white inner card inside, with the portrait floating between the two layers
 - Each resident's **3 liked tags** displayed as emoji pills below their name — hover any pill to see the tag name
 - **Friendship level tracker** with +/− buttons and a colour-matched progress bar
 - **🎁 Return Gift** — the item the resident gives you the first time you gift them
+- **🎀 Daily Gift Tracker** — log up to 3 gifts per day per resident, with a counter that shows how many you've given. Automatically resets at 7AM GMT every day (6AM during Daylight Saving Time)
 - **Companion ability pills** showing progress at a glance — ○ not started, ◑ partially unlocked (X/Y), ✓ fully unlocked
 
 **In the detail modal:**
+- **🎀 Daily Gift Tracker** — full version with dot indicators, a Log Gift button, timestamp of your last gift, and a manual Reset button for when you use an in-game reset item
 - 💝 **Loved Gift** — shown with ❤️❤️❤️ and friendship value in a pink highlighted box
-- 🎁 **Liked Gifts** — sorted by heart tier then friendship value, each showing ❤️ or ❤️❤️ and FV
-- 🎒 **Giftable from Inventory** — automatically cross-references the resident's liked tags against your inventory and shows every item you currently have that they'd accept as a gift, with matching tags highlighted
+- 🎁 **Liked Gifts** — sorted by heart tier then friendship value, each showing hearts and FV
+- 🎒 **Giftable from Inventory** — automatically cross-references the resident's liked tags against your inventory and shows every item you currently have that qualifies as a gift, with matching tags highlighted
 - 🌟 **Companion Abilities** — every ability with its unlock friendship level and description, broken down by tier for multi-level abilities, togglable per level
 
 > All gift and ability data is real game data — pre-filled for you, nothing to enter manually.
@@ -42,6 +44,7 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 ### 🎒 Inventory
 
 - Add, edit, and delete items with an emoji, name, category, quantity, and **up to 4 tags**
+- **✏️ Edit button** on each card to update emoji, name, quantity, and tags
 - Tags are emoji pills — hover to see the tag name. They're user-defined and grow organically as you play
 - **Tag autocomplete** — once you've tagged a few items, those tags appear as suggestions when tagging the next one
 - **Tag filter bar** — click any tag to filter your inventory down to matching items. Click again to clear
@@ -75,9 +78,9 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 
 ### 🌐 App-wide
 
+- **Dreamy animated background** — a slow drifting pastel gradient blending pink, lavender, peach, mint, and sky blue
 - **Everything saves automatically** — no accounts, no sign-in, fully browser-based
 - **Export & Import** your full island data as a JSON file — residents, inventory, recipes, and catalogue all included
-- **Dynamic tab backgrounds** — each tab fades into its own character colour palette
 - **Toast notifications** for every save and delete
 - All existing data **migrates automatically** from older versions
 
@@ -104,6 +107,16 @@ Tags are displayed as emoji pills throughout the app — hover any pill to see t
 | Dairy | 🥛 | Fire | 🔥 | Metal | ⚙️ |
 
 New tags you create will display as text until an emoji is added to the `TAG_EMOJI` map in `src/constants.js`.
+
+---
+
+## 🎀 Gift Tracking
+
+Each resident can receive up to 3 gifts per day. The daily reset happens at **7AM GMT** (6AM GMT during Daylight Saving Time). The app tracks this automatically — no manual date management needed.
+
+- **Log a gift** by clicking the counter on a resident card or the Log Gift button in their detail modal
+- **Manual reset** available in the detail modal for when you use an in-game reset item
+- The counter resets itself automatically at the correct time each day
 
 ---
 
@@ -140,13 +153,13 @@ Open `src/constants.js` and add your character to these three objects:
 
 ```js
 // 1. The card gradient bar (left → right)
-ACCENT_GRADIENTS: { hangyodon: "linear-gradient(90deg, #4db8b0, #a8e6e2)" }
+ACCENT_GRADIENTS: { mychar: "linear-gradient(90deg, #hex1, #hex2)" }
 
 // 2. The full page background (colour → white, top to bottom)
-ACCENT_BG_GRADIENTS: { hangyodon: "linear-gradient(180deg, #d4f0ee 0%, #eef8f7 50%, #ffffff 100%)" }
+ACCENT_BG_GRADIENTS: { mychar: "linear-gradient(180deg, #hex1 0%, #hex2 50%, #ffffff 100%)" }
 
 // 3. The solid colour for tab buttons and headers
-ACCENT_SOLID: { hangyodon: "#4db8b0" }
+ACCENT_SOLID: { mychar: "#hex" }
 ```
 
 ---
