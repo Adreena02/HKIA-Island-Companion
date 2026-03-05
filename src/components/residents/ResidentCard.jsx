@@ -159,7 +159,7 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails }) {
       {/* View Gifts button — sits outside inner card, inside tint bg */}
       <div style={{ textAlign: "center", marginTop: 12 }}>
         <Btn variant="ghost" small onClick={() => onViewDetails(resident)}>
-          🎁 View Gifts
+          🌸 View Details
         </Btn>
       </div>
     </div>
