@@ -202,6 +202,10 @@ ACCENT_SOLID:        { mychar: "#hex" }
 
 ---
 
-## 🌸 Note
+## 🌸 A Note
 
-This is a passion project built by a player, for players. Not affiliated with Sanrio or Hello Kitty Island Adventure. If you find it helpful, share it with your fellow islanders! 🐾
+This app is a passion project built by a team of one — designed, developed, tested, and maintained entirely by a single player who got tired of juggling Notepad files and physical notebooks mid-session. Every feature, every piece of game data, every changelog entry, and every late-night bug fix is the work of one person who just wanted a better way to play.
+
+If something's broken, it's on the Known Issues list. If something's missing, it's probably on the roadmap. And if you find it helpful, share it with your fellow islanders — that's the whole point. 🐾
+
+*Not affiliated with Sanrio or Hello Kitty Island Adventure.*
