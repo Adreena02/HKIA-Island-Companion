@@ -44,6 +44,17 @@ export const ACCENT_GRADIENTS = {
   pekkle:      "linear-gradient(90deg, #f5c842, #f9e4a0)",
   hangyodon:   "linear-gradient(90deg, #00a896, #7dd4cc)",
   furniture:   "linear-gradient(90deg, #c8956c, #e8c4a0)",
+  // Quest-unlocked residents
+  wishMemell:  "linear-gradient(90deg, #f59e0b, #fcd34d)",
+  mysweetpiano:"linear-gradient(90deg, #f9a8d4, #fbcfe8)",
+  moppu:       "linear-gradient(90deg, #38bdf8, #7dd3fc)",
+  tophat:      "linear-gradient(90deg, #6366f1, #a5b4fc)",
+  bigchallenges:"linear-gradient(90deg, #78350f, #d97706)",
+  kiki:        "linear-gradient(90deg, #818cf8, #c7d2fe)",
+  lala:        "linear-gradient(90deg, #f472b6, #fbcfe8)",
+  // DLC residents
+  usahana:     "linear-gradient(90deg, #ec4899, #f9a8d4)",
+  cogimyun:    "linear-gradient(90deg, #8b5cf6, #c4b5fd)",
 };
 
 // Full-page background gradients (character color → white, top to bottom)
@@ -63,6 +74,15 @@ export const ACCENT_BG_GRADIENTS = {
   pekkle:      "linear-gradient(180deg, #fdf08a 0%, #fef9c3 50%, #fefdf0 100%)",
   hangyodon:   "linear-gradient(180deg, #9de6df 0%, #c8f4f0 50%, #edfaf8 100%)",
   furniture:   "linear-gradient(180deg, #f5e6d8 0%, #fdf6f0 50%, #ffffff 100%)",
+  wishMemell:  "linear-gradient(180deg, #fef3c7 0%, #fffbeb 50%, #ffffff 100%)",
+  mysweetpiano:"linear-gradient(180deg, #fce7f3 0%, #fdf2f8 50%, #ffffff 100%)",
+  moppu:       "linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%)",
+  tophat:      "linear-gradient(180deg, #e0e7ff 0%, #eef2ff 50%, #ffffff 100%)",
+  bigchallenges:"linear-gradient(180deg, #fef3c7 0%, #fffbeb 50%, #ffffff 100%)",
+  kiki:        "linear-gradient(180deg, #e0e7ff 0%, #eef2ff 50%, #ffffff 100%)",
+  lala:        "linear-gradient(180deg, #fce7f3 0%, #fdf2f8 50%, #ffffff 100%)",
+  usahana:     "linear-gradient(180deg, #fce7f3 0%, #fdf2f8 50%, #ffffff 100%)",
+  cogimyun:    "linear-gradient(180deg, #ede9fe 0%, #f5f3ff 50%, #ffffff 100%)",
 };
 
 // Solid accent colours (tab buttons, scrollbar, header title)
@@ -82,6 +102,15 @@ export const ACCENT_SOLID = {
   pekkle:      "#f5c842",
   hangyodon:   "#00a896",
   furniture:   "#c8956c",
+  wishMemell:  "#f59e0b",
+  mysweetpiano:"#f472b6",
+  moppu:       "#38bdf8",
+  tophat:      "#6366f1",
+  bigchallenges:"#d97706",
+  kiki:        "#818cf8",
+  lala:        "#ec4899",
+  usahana:     "#ec4899",
+  cogimyun:    "#8b5cf6",
 };
 
 export const ITEM_CATEGORIES = [
@@ -147,6 +176,24 @@ export const TAG_EMOJI = {
   "Dairy":         "🥛",
   "Fire":          "🔥",
   "Metal":         "⚙️",
+  // New tags from quest/DLC residents
+  "Flower":        "🌸",
+  "Rare":          "💎",
+  "Cloud":         "☁️",
+  "Creative":      "🎨",
+  "Gaming":        "🎮",
+  "Digital":       "💻",
+  "Frozen":        "🧊",
+  "Stars":         "⭐",
+  "Resilience":    "💪",
+  "Volcanic":      "🌋",
+  "Imagination":   "🌈",
+  "Mochi":         "🍡",
+  "Rainbow":       "🌈",
+  "Cheese":        "🧀",
+  "Wheatflower":   "🌾",
+  "Wand":          "🪄",
+  "Glass":         "🔮",
 };
 
 export const SEED_RESIDENTS = [
@@ -542,6 +589,255 @@ export const SEED_RESIDENTS = [
       },
     ],
     note: "Encountered elsewhere — found in Rainbow Reef (needs Snorkel!)",
+  },
+
+  // ─── Quest-unlocked residents ───────────────────────────────────────────────
+
+  {
+    id: uid(), name: "Wish me mell", birthday: "September 20th", likedTags: ["Fire", "Flower", "Rare"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_WishMeMell.png?670e94",
+    color: "wishMemell", unlockType: "quest",
+    maxLevel: "20", currentLevel: 0, firstGift: "Honeycomb",
+    note: "Unlocked via quest — found in Merry Meadow",
+    lovedGift: { name: "Rare Candle", heartValue: 3, friendshipValue: 8 },
+    gifts: [
+      { name: "Flower Candle",       heartValue: 2, friendshipValue: 5 },
+      { name: "Rare-Tagged Critter", heartValue: 1, friendshipValue: 5 },
+      { name: "Rare-Tagged Fish",    heartValue: 1, friendshipValue: 5 },
+    ],
+    abilities: [
+      {
+        name: "Master Gardener",
+        levels: [
+          { level: 1, unlocksAt: 11, description: "Take her with you when using the Seed Dispenser to turn flowers into seed packets for a 20% bonus chance at a Seed seed!", unlocked: false },
+          { level: 2, unlocksAt: 17, description: "Take her with you when using the Seed Dispenser to turn flowers into seed packets for a 50% bonus chance at a Seed seed!", unlocked: false },
+        ],
+      },
+      {
+        name: "Precision Play",
+        levels: [
+          { level: 1, unlocksAt: 13, description: "Take her with you to play the 'Crane Craze' mini game to reduce movement speed of the floating prizes by 25%!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "My Sweet Piano", birthday: "July 6th", likedTags: ["Cloud", "Creative", "Wood"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_My_Sweet_Piano.png?c2d3e8",
+    color: "mysweetpiano", unlockType: "quest",
+    maxLevel: "20", currentLevel: 0, firstGift: "Wool",
+    note: "Unlocked via quest — found in Seaside Resort",
+    lovedGift: { name: "Colorful Lamb Plush", heartValue: 3, friendshipValue: 10 },
+    gifts: [
+      { name: "Regional Lamb Plushes",  heartValue: 2, friendshipValue: 7 },
+      { name: "Lamb Plush",             heartValue: 2, friendshipValue: 6 },
+      { name: "Quattro Formaggi Pizza", heartValue: 1, friendshipValue: 6 },
+      { name: "Toasted Marshmallow Cloud", heartValue: 1, friendshipValue: 5 },
+      { name: "Other Candy Clouds",     heartValue: 1, friendshipValue: 4 },
+      { name: "Critter Totem",          heartValue: 1, friendshipValue: 4 },
+      { name: "Regional Souvenir Dolls",heartValue: 1, friendshipValue: 3 },
+      { name: "Color Candles",          heartValue: 1, friendshipValue: 3 },
+    ],
+    abilities: [
+      {
+        name: "Master Interior Designer",
+        levels: [
+          { level: 1, unlocksAt: 13, description: "Take her with you if you are going to customize furniture, and she will refund up to 10% of the cost of furniture customization!", unlocked: false },
+          { level: 2, unlocksAt: 16, description: "Take her with you if you are going to customize furniture, and she will refund up to 20% of the cost of furniture customization!", unlocked: false },
+          { level: 3, unlocksAt: 19, description: "Take her with you if you are going to customize furniture, and she will refund up to 30% of the cost of furniture customization!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "Moppu", birthday: "February 10th", likedTags: ["Digital", "Frozen", "Gaming"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Moppu.png?ecf3e7",
+    color: "moppu", unlockType: "quest",
+    maxLevel: "25", currentLevel: 0, firstGift: "Chips",
+    note: "Unlocked via quest — found in Snow Village",
+    lovedGift: { name: "GameBear", heartValue: 3, friendshipValue: 10 },
+    gifts: [
+      { name: "Cozy Cola Slushy",    heartValue: 2, friendshipValue: 7 },
+      { name: "Sugarwater Slushy",   heartValue: 2, friendshipValue: 7 },
+      { name: "Green Apple Slushy",  heartValue: 2, friendshipValue: 7 },
+      { name: "Bluebeary Slushy",    heartValue: 2, friendshipValue: 7 },
+      { name: "Chilly Cherry Slushy",heartValue: 2, friendshipValue: 7 },
+      { name: "Brr Bear Blast",      heartValue: 1, friendshipValue: 6 },
+      { name: "Starry Skies Shake",  heartValue: 1, friendshipValue: 6 },
+      { name: "Strawberry Shake",    heartValue: 1, friendshipValue: 6 },
+      { name: "Birthday Cake Shake", heartValue: 1, friendshipValue: 6 },
+      { name: "Holograms",           heartValue: 1, friendshipValue: 5 },
+      { name: "Glitchy Book",        heartValue: 1, friendshipValue: 4 },
+    ],
+    abilities: [
+      {
+        name: "Snow Day",
+        levels: [
+          { level: 1, unlocksAt: 12, description: "Take him with you to throw snowballs!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "TOPHAT", birthday: "December 10th", likedTags: ["Stars", "Fancy", "Digital"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Tophat.png?9b514c",
+    color: "tophat", unlockType: "quest",
+    maxLevel: "10", currentLevel: 0, firstGift: "Glitch",
+    note: "Unlocked via quest — found in Seaside Resort",
+    lovedGift: { name: "The Future of Everything", heartValue: 3, friendshipValue: 12 },
+    gifts: [
+      { name: "Computer",                heartValue: 2, friendshipValue: 8 },
+      { name: "Candied Banana Coffee",   heartValue: 1, friendshipValue: 6 },
+      { name: "Beignets with Pineapple Dip", heartValue: 1, friendshipValue: 6 },
+      { name: "Spinip Alfredo Pizza",    heartValue: 1, friendshipValue: 6 },
+    ],
+    abilities: [
+      {
+        name: "Pickup Glitch",
+        levels: [
+          { level: 1, unlocksAt: 9, description: "Take him with you when foraging for items, and he will give you a 10% chance of getting two items when picking up an item!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "Big Challenges", birthday: null, likedTags: ["Resilience", "Volcanic", "Book"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Big_Challenges.png?8d0d13",
+    color: "bigchallenges", unlockType: "quest",
+    maxLevel: "20", currentLevel: 0, firstGift: "Little Challenge",
+    note: "Unlocked via quest — found in Seaside Resort",
+    lovedGift: { name: "The Greatest Challenge", heartValue: 3, friendshipValue: 10 },
+    gifts: [
+      { name: "Meditation on Resilience",    heartValue: 2, friendshipValue: 7 },
+      { name: "Volcano Soundtrack",          heartValue: 1, friendshipValue: 5 },
+      { name: "Volcanic Rare-Tagged Fish",   heartValue: 1, friendshipValue: 4 },
+      { name: "Volcanic Rare-Tagged Critter",heartValue: 1, friendshipValue: 4 },
+    ],
+    abilities: [
+      {
+        name: "Vacuum",
+        levels: [
+          { level: 1, unlocksAt: 19, description: "Take him with you when foraging for items, and items will be automatically picked up for you!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "Kiki", birthday: "December 24th", likedTags: ["Dreamy", "Stars", "Frozen"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Kiki.png?6b68f4",
+    color: "kiki", unlockType: "quest",
+    maxLevel: "20", currentLevel: 0, firstGift: "Stardust",
+    note: "Unlocked via quest — found in Cloud Island",
+    lovedGift: { name: "Starry Skies Shake", heartValue: 3, friendshipValue: 12 },
+    gifts: [
+      { name: "Art Supplies",             heartValue: 2, friendshipValue: 8 },
+      { name: "Dreamy Star",              heartValue: 2, friendshipValue: 7 },
+      { name: "Almond Pound Cake",        heartValue: 1, friendshipValue: 6 },
+      { name: "Pink Clouds Ice Cream",    heartValue: 1, friendshipValue: 6 },
+      { name: "Fantasy Omelet",           heartValue: 1, friendshipValue: 5 },
+      { name: "Strawberry Almond Galette",heartValue: 1, friendshipValue: 5 },
+    ],
+    abilities: [
+      {
+        name: "Meteorology",
+        levels: [
+          { level: 1, unlocksAt: null, description: "Unlocks after completing 'Together Forever'. When having Kiki and Lala as companions, the time in-between weather events will decrease by 50%!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "Lala", birthday: "December 24th", likedTags: ["Cheese", "Creative", "Dreamy"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Lala.png?d2cdc2",
+    color: "lala", unlockType: "quest",
+    maxLevel: "20", currentLevel: 0, firstGift: "Stardust",
+    note: "Unlocked via quest — found in Cloud Island",
+    lovedGift: { name: "Quattro Formaggi Pizza", heartValue: 3, friendshipValue: 12 },
+    gifts: [
+      { name: "Three Cheese Pizza",       heartValue: 2, friendshipValue: 8 },
+      { name: "Cheese Cloud",             heartValue: 2, friendshipValue: 8 },
+      { name: "Art Supplies",             heartValue: 2, friendshipValue: 8 },
+      { name: "Almond Pound Cake",        heartValue: 1, friendshipValue: 6 },
+      { name: "Pink Clouds Ice Cream",    heartValue: 1, friendshipValue: 6 },
+      { name: "Fantasy Omelet",           heartValue: 1, friendshipValue: 5 },
+      { name: "Strawberry Almond Galette",heartValue: 1, friendshipValue: 5 },
+    ],
+    abilities: [
+      {
+        name: "Meteorology",
+        levels: [
+          { level: 1, unlocksAt: null, description: "Unlocks after completing 'Together Forever'. When having Kiki and Lala as companions, the time in-between weather events will decrease by 50%!", unlocked: false },
+        ],
+      },
+    ],
+  },
+
+  // ─── DLC residents ──────────────────────────────────────────────────────────
+
+  {
+    id: uid(), name: "Usahana", birthday: "August 7th", likedTags: ["Imagination", "Mochi", "Rainbow"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Usahana.png?ed544c",
+    color: "usahana", unlockType: "dlc", dlc: "City Town",
+    maxLevel: "20", currentLevel: 0, firstGift: "Rice",
+    note: "City Town DLC — unlocked via City Town expansion",
+    lovedGift: { name: "Rainbow Dango", heartValue: 3, friendshipValue: 10 },
+    gifts: [
+      { name: "Mochi",               heartValue: 2, friendshipValue: 7 },
+      { name: "Dango",               heartValue: 2, friendshipValue: 7 },
+      { name: "Colorful Lamb Plush", heartValue: 1, friendshipValue: 6 },
+      { name: "Colorpillar",         heartValue: 1, friendshipValue: 5 },
+    ],
+    abilities: [
+      {
+        name: "Chef's Kiss",
+        levels: [
+          { level: 1, unlocksAt: 4,  description: "Take her with you if you are going to cook anything with the Chef's Station. She will give you a 25% greater chance to create an additional food item when you are cooking!", unlocked: false },
+          { level: 2, unlocksAt: 8,  description: "Take her with you if you are going to cook anything with the Chef's Station. She will give you a 35% greater chance to create an additional food item when you are cooking!", unlocked: false },
+          { level: 3, unlocksAt: 12, description: "Take her with you if you are going to cook anything with the Chef's Station. She will give you a 50% greater chance to create an additional food item when you are cooking!", unlocked: false },
+        ],
+      },
+      {
+        name: "Super Service",
+        levels: [
+          { level: 1, unlocksAt: 19, description: "Take her with you when serving customers at the Imagination Cafe Computer for a 20% chance to earn an extra City Coin!", unlocked: false },
+        ],
+      },
+    ],
+  },
+  {
+    id: uid(), name: "Cogimyun", birthday: "May 7th", likedTags: ["Wheatflower", "Wand", "Glass"],
+    imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_Cogimyun.png?b865fc",
+    color: "cogimyun", unlockType: "dlc", dlc: "Wheatflour Wonderland",
+    maxLevel: "35", currentLevel: 0, firstGift: "Fairy Dust",
+    note: "Wheatflour Wonderland DLC",
+    lovedGift: { name: "Ultimate Wand", heartValue: 3, friendshipValue: 9 },
+    gifts: [
+      { name: "Magical Potions",          heartValue: 2, friendshipValue: 6 },
+      { name: "Flowl",                    heartValue: 1, friendshipValue: 4 },
+      { name: "Wheatflower Candle",       heartValue: 1, friendshipValue: 4 },
+      { name: "Spaghetti & Meatballs",    heartValue: 1, friendshipValue: 4 },
+      { name: "Veggie Lo Mein",           heartValue: 1, friendshipValue: 4 },
+      { name: "Wheatflower",              heartValue: 1, friendshipValue: 3 },
+      { name: "Wheatflower-Tagged Critter",heartValue: 1, friendshipValue: 3 },
+      { name: "Spaghetti",               heartValue: 1, friendshipValue: 3 },
+      { name: "Noodle Cup",              heartValue: 1, friendshipValue: 3 },
+      { name: "Mont Blanc",              heartValue: 1, friendshipValue: 3 },
+      { name: "Lo Mein",                 heartValue: 1, friendshipValue: 3 },
+    ],
+    abilities: [
+      {
+        name: "Magical Girl",
+        levels: [
+          { level: 1, unlocksAt: 19, description: "Take her with you for a 50% chance at obtaining additional rewards when playing Mini Games and donating to the Fwishing Well, as well as a 5% chance of gaining a flower pattern when fertilizing!", unlocked: false },
+        ],
+      },
+      {
+        name: "Fall Apart",
+        levels: [
+          { level: 1, unlocksAt: 26, description: "Take her with you when crafting and she will refund a portion of the crafting cost!", unlocked: false },
+        ],
+      },
+    ],
   },
 ];
 

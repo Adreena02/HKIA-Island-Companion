@@ -7,6 +7,8 @@ import { GiftTracker } from "./GiftTracker";
 export function ResidentCard({ resident, onLevelChange, onViewDetails, onGiftLog }) {
   const [hov, setHov] = useState(false);
   const { name, birthday, maxLevel, currentLevel, firstGift, note, imageUrl } = resident;
+  const unlockType = resident.unlockType;
+  const dlcName    = resident.dlc;
 
   const safeColor      = getSafeColor(resident.color);
   const max            = parseInt(maxLevel) || null;
@@ -67,6 +69,28 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails, onGiftLog
             fontSize: "clamp(1.1rem, 4vw, 1.3rem)",
             fontWeight: 700, color: solidColor,
           }}>{name}</span>
+
+          {/* Unlock type badge */}
+          {unlockType === "dlc" && (
+            <div style={{ marginTop: 4 }}>
+              <span style={{
+                display: "inline-block", fontSize: "0.68rem", fontWeight: 700,
+                padding: "2px 10px", borderRadius: 50,
+                background: "linear-gradient(90deg, #f59e0b, #fcd34d)",
+                color: "#fff", letterSpacing: "0.04em",
+              }}>💎 DLC{dlcName ? ` — ${dlcName}` : ""}</span>
+            </div>
+          )}
+          {unlockType === "quest" && (
+            <div style={{ marginTop: 4 }}>
+              <span style={{
+                display: "inline-block", fontSize: "0.68rem", fontWeight: 700,
+                padding: "2px 10px", borderRadius: 50,
+                background: "linear-gradient(90deg, #7c3aed, #a78bfa)",
+                color: "#fff", letterSpacing: "0.04em",
+              }}>🔮 Quest Unlock</span>
+            </div>
+          )}
         </div>
 
         {/* Liked tags */}
@@ -81,7 +105,7 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails, onGiftLog
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a", marginBottom: 4 }}>🎂 Birthday</div>
             <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#3a2e2e" }}>
-              {birthday || <span style={{ color: "#bbb", fontStyle: "italic" }}>—</span>}
+              {birthday ?? <span style={{ color: "#bbb", fontStyle: "italic" }}>Unknown</span>}
             </div>
           </div>
           <div style={{ textAlign: "center" }}>

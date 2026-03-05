@@ -20,8 +20,11 @@ export function ResidentsTab({ showToast }) {
       r.gifts?.some((g) => g.name?.toLowerCase().includes(search.toLowerCase()));
     const matchAvail =
       filterAvail === "all"       ? true :
-      filterAvail === "immediate" ? !r.note :
-      !!r.note;
+      filterAvail === "immediate" ? (!r.note && !r.unlockType) || (!r.unlockType) :
+      filterAvail === "elsewhere" ? (r.note && !r.unlockType) :
+      filterAvail === "quest"     ? r.unlockType === "quest" :
+      filterAvail === "dlc"       ? r.unlockType === "dlc" :
+      true;
     return matchSearch && matchAvail;
   });
 
@@ -74,17 +77,19 @@ export function ResidentsTab({ showToast }) {
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "12px 0 20px" }}>
         {[
-          { val: "all",       label: "🌺 All" },
-          { val: "immediate", label: "⭐ Immediately Available" },
-          { val: "elsewhere", label: "🗺️ Encountered Elsewhere" },
-        ].map(({ val, label }) => (
+          { val: "all",       label: "🌺 All",                    active: "#e8003c" },
+          { val: "immediate", label: "⭐ Immediately Available",   active: "#e8003c" },
+          { val: "elsewhere", label: "🗺️ Encountered Elsewhere",  active: "#e8003c" },
+          { val: "quest",     label: "🔮 Quest Unlocked",         active: "#7c3aed" },
+          { val: "dlc",       label: "💎 DLC",                    active: "#f59e0b" },
+        ].map(({ val, label, active }) => (
           <button key={val} onClick={() => setFilterAvail(val)} style={{
             fontFamily: "'Baloo 2', cursive", fontWeight: 700,
             fontSize: "clamp(0.75rem, 2.5vw, 0.85rem)",
             padding: "6px 14px", borderRadius: 50, border: "none", cursor: "pointer",
-            background: filterAvail === val ? "#e8003c" : "rgba(255,255,255,0.6)",
+            background: filterAvail === val ? active : "rgba(255,255,255,0.6)",
             color: filterAvail === val ? "#fff" : "#7a6a6a",
-            boxShadow: filterAvail === val ? "0 2px 10px #e8003c44" : "none",
+            boxShadow: filterAvail === val ? `0 2px 10px ${active}44` : "none",
             backdropFilter: "blur(8px)",
             transition: "all 0.2s ease",
             whiteSpace: "nowrap",
