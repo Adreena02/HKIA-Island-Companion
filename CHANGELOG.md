@@ -4,12 +4,46 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
-## [Current 0.9 Patch] - Gift Tracking & Inventory Editing
+## [Current 1.2 Patch] — Bug Fixes & Code Cleanup
+
+### Fixed
+- **Critical bug in `InventoryTab`** — `handleSave` was detached from the component due to a missing closing brace on `handleImportMaterials`, causing a runtime crash on any attempt to add or edit inventory items
+- **Dead `isDark` check removed from `App.jsx`** — a leftover `badtzmaru` colour check that referenced a tab colour that doesn't exist in the tab bar
+
+### Removed
+- **`Tag` component deleted from `Display.jsx`** — exported but never imported anywhere in the app
+- **`src/components/furniture/FurnitureTab.jsx` deleted** — fully replaced by `CatalogueTab.jsx` and never imported anywhere; was dead code
+
+---
+
+## [1.1 Patch] — Scrolling Ticker Banner & Extended Test Suite
 
 ### Added
-- **🎀 Daily Gift Tracker** - each resident tracks up to 3 gifts per day. A compact counter sits on the resident card; the full tracker in the detail modal includes dot indicators, a Log Gift button, timestamp of the last gift, and a manual Reset button for in-game reset items
-- **Automatic daily reset** - gift counts reset automatically at 7AM GMT (6 AM during Daylight Savings Time). No manual action needed
-- **`giftReset`.js utility** - handles all reset logic, expiry checks, and time formatting in one place
+- **Scrolling ticker banner** — a marquee-style banner pinned to the top of the page with messages about active development. Colour transitions with the active tab's character theme
+- **6 new test files** — `GiftTracker.test.jsx`, `TagInput.test.jsx`, `QtyBtn.test.jsx`, `Btn.test.jsx`, `materials.test.js`, `residents.test.js` — covering component rendering and interactions, data integrity for all 13 residents and all 52 materials, and edge cases across the gift system and tag input
+
+---
+
+## [1.0 Patch] — Materials Seed Data & Inventory Improvements
+
+### Added
+- **`constants_materials.js`** — 52 Friendship Island materials pre-loaded with name, emoji, category, location, and qty 0, ready to import
+- **📦 Import Materials button** in the Inventory tab — adds all materials in one click, skipping any already in your inventory by name
+- **📍 Location badge** on inventory cards — shows where the item is found (e.g. Spooky Swamp, Rainbow Reef, Gift Return)
+- **Currency** and **Weather** added as new inventory categories, with their own colour badges
+
+### Changed
+- `ITEM_CATEGORIES` updated to include `Currency` and `Weather`
+- `INVENTORY_CAT_COLORS` updated with amber for Currency and sky blue for Weather
+
+---
+
+## [0.9 Patch] — Gift Tracking & Inventory Editing
+
+### Added
+- **🎀 Daily Gift Tracker** — each resident tracks up to 3 gifts per day. A compact counter sits on the resident card; the full tracker in the detail modal includes dot indicators, a Log Gift button, timestamp of last gift, and a manual Reset button for in-game reset items
+- **Automatic daily reset** — gift counts reset automatically at 7AM GMT (6AM during Daylight Saving Time). No manual action needed
+- **`giftReset.js` utility** — handles all reset logic, expiry checks, and time formatting in one place
 - **`GiftTracker` component** — reusable component used in both compact (card) and full (modal) form
 - **✏️ Edit inventory items** — each inventory card now has an edit button to update emoji, name, quantity, and tags without deleting and re-adding
 
@@ -22,28 +56,29 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
-## [0.8 Patch] - Character Palettes & Visual Fixes
+## [0.8 Patch] — Character Palettes & Visual Fixes
 
 ### Added
-- **4 new character palettes** - Chococat (chocolate brown), Retsuko (red), Pekkle (sunny yellow), Hangyodon (ocean teal)
+- **4 new character palettes** — Chococat (chocolate brown), Retsuko (red), Pekkle (sunny yellow), Hangyodon (ocean teal)
 
 ### Changed
 - Chococat, Retsuko, Pekkle, and Hangyodon reassigned from borrowed palettes to their own
 
 ### Fixed
-- Portrait now **floats between the outer tint and inner white card** - eliminates the thin white line visual bug at the top of resident cards
+- Portrait now **floats between the outer tint and inner white card** — eliminates the thin white line visual bug at the top of resident cards
 - Inner white card given a subtle coloured border so the edge is always visible on light palettes
-- Light palette backgrounds (Cinnamoroll, Pochacco, Hangyodon, Pekkle) made more saturated so the tine is clearly visible
+- Light palette backgrounds (Cinnamoroll, Pochacco, Hangyodon, Pekkle) made more saturated so the tint is clearly visible
 
 ---
-## [0.7 Patch] - Dreamy Animated Background
+
+## [0.7 Patch] — Dreamy Animated Background
 
 ### Changed
-- **Dreamy animated background** - replaces the dynamic per-tab background with a slow 28 second drifting pastel gradient blending pink, lavender, peach, mint, and sky blue
+- **Dreamy animated background** — replaces the dynamic per-tab background with a slow 28-second drifting pastel gradient blending pink, lavender, peach, mint, and sky blue
 
 ---
 
-## [Current 0.6 Patch] — Tag System & Gifting Cross-Reference
+## [0.6 Patch] — Tag System & Gifting Cross-Reference
 
 ### Added
 - **Tag system** — items in Inventory and Catalogue can now have up to 4 tags each, matching the in-game tag mechanic

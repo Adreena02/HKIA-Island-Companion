@@ -1,37 +1,8 @@
 /**
  * Shared display components.
- * Tag        — coloured badge pill
  * SearchBar  — styled search input
  * EmptyState — centered placeholder when a list is empty
  */
-
-// ── Tag ────────────────────────────────────────────────────────
-const TAG_STYLES = {
-  gift:    { bg: "#ffe8f0", color: "#c04060" },
-  reward:  { bg: "#e8f8ef", color: "#2a7a5a" },
-  ability: { bg: "#ede8ff", color: "#6040a0" },
-  empty:   { bg: "#f2eee8", color: "#7a6a6a" },
-};
-
-export function Tag({ type = "empty", children }) {
-  const s = TAG_STYLES[type];
-  return (
-    <span style={{
-      fontSize: "0.8rem",
-      fontWeight: 600,
-      padding: "3px 10px",
-      borderRadius: 50,
-      background: s.bg,
-      color: s.color,
-      display: "inline-block",
-      fontStyle: type === "empty" ? "italic" : "normal",
-    }}>
-      {children}
-    </span>
-  );
-}
-
-// ── SearchBar ──────────────────────────────────────────────────
 export function SearchBar({ value, onChange, placeholder }) {
   return (
     <input

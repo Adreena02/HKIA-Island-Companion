@@ -82,7 +82,7 @@ export const ACCENT_SOLID = {
 };
 
 export const ITEM_CATEGORIES = [
-  "Ingredient", "Material", "Food", "Gift", "Tool", "Decor", "Other",
+  "Ingredient", "Material", "Food", "Gift", "Tool", "Decor", "Currency", "Weather", "Other",
 ];
 
 export const INVENTORY_CAT_COLORS = {
@@ -92,6 +92,8 @@ export const INVENTORY_CAT_COLORS = {
   Gift:       "#fce4f0",
   Tool:       "#e8fde8",
   Decor:      "#ede9fe",
+  Currency:   "#fef3c7",
+  Weather:    "#e0f2fe",
   Other:      "#f2eee8",
 };
 

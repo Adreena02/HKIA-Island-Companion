@@ -43,14 +43,16 @@ All 13 residents are pre-loaded with their real in-game portraits. The 6 immedia
 
 ### 🎒 Inventory
 
+- **📦 Import Materials** — one-click import of all 52 Friendship Island materials pre-loaded with name, emoji, category, and location. Skips anything already in your inventory by name
 - Add, edit, and delete items with an emoji, name, category, quantity, and **up to 4 tags**
 - **✏️ Edit button** on each card to update emoji, name, quantity, and tags
+- **📍 Location badge** on each card showing where the item is found (e.g. Spooky Swamp, Gift Return)
 - Tags are emoji pills — hover to see the tag name. They're user-defined and grow organically as you play
 - **Tag autocomplete** — once you've tagged a few items, those tags appear as suggestions when tagging the next one
 - **Tag filter bar** — click any tag to filter your inventory down to matching items. Click again to clear
 - Tags are included in search — type a tag name to find matching items
 - Quick +/− buttons to update quantities on the fly
-- Colour-coded category badges
+- Colour-coded category badges — Ingredient, Material, Food, Gift, Tool, Decor, Currency, Weather
 
 ---
 
@@ -143,7 +145,9 @@ npm run dev
 npx vitest
 ```
 
-> **First time running?** The app loads with all 13 residents pre-filled. If you're updating from an older version and things look off, open your browser console and run `localStorage.clear()` then refresh.
+> **Note:** If upgrading from an earlier version, you can safely delete `src/components/furniture/FurnitureTab.jsx` — it was replaced by `CatalogueTab.jsx` and is no longer used.
+
+ The app loads with all 13 residents pre-filled. If you're updating from an older version and things look off, open your browser console and run `localStorage.clear()` then refresh.
 
 ---
 

@@ -8,6 +8,7 @@ import { TagInput } from "../ui/TagInput";
 import { TagPill } from "../ui/TagPill";
 import { QtyBtn } from "./QtyBtn";
 import { SEED_INVENTORY, ITEM_CATEGORIES, INVENTORY_CAT_COLORS, uid } from "../../constants";
+import { SEED_MATERIALS } from "../../constants_materials";
 
 const BLANK_FORM = { emoji: "", name: "", category: "Ingredient", qty: 1, tags: [] };
 
@@ -67,6 +68,17 @@ export function InventoryTab({ showToast }) {
     setModalOpen(true);
   };
 
+  const handleImportMaterials = () => {
+    const existingNames = new Set(inventory.map((i) => i.name.toLowerCase()));
+    const toAdd = SEED_MATERIALS.filter((m) => !existingNames.has(m.name.toLowerCase()));
+    if (toAdd.length === 0) {
+      showToast("✅ All materials already in inventory!");
+      return;
+    }
+    setInventory((prev) => [...prev, ...toAdd]);
+    showToast(`🎒 Added ${toAdd.length} material${toAdd.length === 1 ? "" : "s"}!`);
+  };
+
   const handleSave = () => {
     if (!form.name.trim()) return;
     if (editing) {
@@ -103,7 +115,10 @@ export function InventoryTab({ showToast }) {
         <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>
           🎒 My Inventory
         </span>
-        <Btn variant="mint" onClick={openAdd}>＋ Add Item</Btn>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Btn variant="ghost" onClick={handleImportMaterials}>📦 Import Materials</Btn>
+          <Btn variant="mint" onClick={openAdd}>＋ Add Item</Btn>
+        </div>
       </div>
 
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 Search items, categories, or tags..." />
@@ -157,6 +172,13 @@ export function InventoryTab({ showToast }) {
                   padding: "2px 9px", borderRadius: 50,
                   background: INVENTORY_CAT_COLORS[item.category] || "#f2eee8", color: "#3a2e2e",
                 }}>{item.category}</span>
+
+                {item.location && (
+                  <span style={{
+                    fontSize: "0.68rem", fontWeight: 600, padding: "2px 8px", borderRadius: 50,
+                    background: "#f2eee8", color: "#7a6a6a",
+                  }}>📍 {item.location}</span>
+                )}
 
                 {(item.tags ?? []).length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center" }}>

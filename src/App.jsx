@@ -47,6 +47,10 @@ export default function App() {
           75%  { background-position: 50% 0%; }
           100% { background-position: 0% 50%; }
         }
+        @keyframes ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
         ::-webkit-scrollbar { width: 7px; }
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.3); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: ${solid}; border-radius: 10px; }
@@ -60,6 +64,46 @@ export default function App() {
         backgroundSize: "400% 400%",
         animation: "dreamDrift 28s ease infinite",
       }} />
+
+      {/* Scrolling ticker banner */}
+      <div style={{
+        width: "100%", overflow: "hidden",
+        background: `linear-gradient(90deg, ${solid}cc, ${solid}99)`,
+        backdropFilter: "blur(8px)",
+        borderBottom: `2px solid ${solid}44`,
+        padding: "7px 0",
+        transition: "background 0.5s ease",
+      }}>
+        <div style={{
+          display: "flex", whiteSpace: "nowrap",
+          animation: "ticker 22s linear infinite",
+        }}>
+          {[...Array(2)].map((_, i) => (
+            <span key={i} style={{
+              display: "inline-flex", alignItems: "center", gap: 28,
+              paddingRight: 48,
+              fontFamily: "'Baloo 2', cursive",
+              fontSize: "0.85rem", fontWeight: 700,
+              color: "rgba(255,255,255,0.95)",
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+            }}>
+              {[
+                "🌺 Active development",
+                "✨ More features coming soon",
+                "🎀 Thanks for playing!",
+                "🌸 Built with love for HKIA fans",
+                "🍓 Feedback welcome",
+              ].map((msg, j) => (
+                <span key={j} style={{ display: "inline-flex", alignItems: "center", gap: 28 }}>
+                  {msg}
+                  <span style={{ opacity: 0.5 }}>·</span>
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Header */}
       <header style={{ textAlign: "center", padding: "28px 20px 0" }}>
@@ -80,13 +124,12 @@ export default function App() {
         {TABS.map((tab) => {
           const isActive  = activeTab === tab.id;
           const tabSolid  = ACCENT_SOLID[tab.color];
-          const isDark    = tab.color === "badtzmaru";
           return (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               fontFamily: "'Baloo 2', cursive", fontSize: "1rem", fontWeight: 700,
               padding: "10px 24px", border: "none", borderRadius: 50, cursor: "pointer",
               background: isActive ? tabSolid : "rgba(255,255,255,0.6)",
-              color: isActive ? (isDark ? "#fef08a" : "#fff") : "#7a6a6a",
+              color: isActive ? "#fff" : "#7a6a6a",
               boxShadow: isActive ? `0 4px 18px ${tabSolid}66` : "0 2px 10px rgba(180,130,130,0.15)",
               transform: isActive ? "translateY(-2px)" : "none",
               backdropFilter: "blur(8px)",
