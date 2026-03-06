@@ -4,6 +4,16 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
+## [2.4] — Ability Pill Migration Fix
+
+### Fixed
+- **Ability pill layout inconsistency for existing users** — `migrateResident` now automatically patches stored resident data against the current seed on every load. Existing users with old flat ability data (`{ name, description, unlocked }`) will have their abilities silently upgraded to the tiered structure (`{ name, levels: [...] }`) without any data loss. Friendship levels, gift logs, notes, and all unlocked ability states are fully preserved across the migration
+
+### Changed
+- **`utils.test.js`** — `migrateResident` tests expanded to cover ability structure migration, unlocked state carry-over from both flat and tiered stored formats, user progress field preservation, and the fallback path for unrecognized residents
+
+---
+
 ## [2.3] — Code Quality, Full Test Suite & WIP Notices
 
 ### Added
@@ -48,9 +58,6 @@ All notable changes to this project, from the very beginning. Newest first.
 - Ability pills on resident cards now stack vertically so every card is uniform regardless of ability count
 - `null` birthday (Big Challenges) renders as `Unknown`
 - `null` max level renders without a progress bar (Usahana's max level since confirmed as 20)
-
-### Known Issues
-- **Ability pill layout inconsistency for existing users** — the vertical stacking fix only applies to fresh installs. Running `localStorage.removeItem("hkia_residents")` in the browser console and refreshing will fix it, but clears friendship levels and gift logs. A proper migration patch is planned
 
 ---
 

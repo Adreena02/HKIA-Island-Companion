@@ -12,15 +12,56 @@ export const normalizeAbility = (a) => {
   return a;
 };
 
-/** Migrates old colour keys (coral/mint/lav/lemon) to new Sanrio keys */
+const COLOR_MIGRATION = {
+  coral: "hellokitty",
+  mint:  "cinnamoroll",
+  lav:   "mymelody",
+  lemon: "pompompurin",
+};
+
+// Patches a stored resident against the current seed data, preserving all
+// user progress (currentLevel, giftLog, note, ability unlocked states).
 export const migrateResident = (r) => {
-  const COLOR_MIGRATION = {
-    coral: "hellokitty",
-    mint:  "cinnamoroll",
-    lav:   "mymelody",
-    lemon: "pompompurin",
+  const seed = SEED_RESIDENTS.find((s) => s.name === r.name);
+
+  // Migrate old color keys
+  const color = COLOR_MIGRATION[r.color] ?? r.color;
+
+  // If we can't match to a seed resident, just fix the color and move on
+  if (!seed) return { ...r, color };
+
+  // Carry over any unlocked states from stored abilities so progress isn't lost
+  const storedUnlocks = {};
+  (r.abilities ?? []).forEach((a) => {
+    const name = a.name;
+    if (!name) return;
+    if (a.levels) {
+      a.levels.forEach((lv) => {
+        storedUnlocks[`${name}__${lv.level}`] = lv.unlocked ?? false;
+      });
+    } else {
+      // Old flat format — treat as level 1
+      storedUnlocks[`${name}__1`] = a.unlocked ?? false;
+    }
+  });
+
+  const abilities = seed.abilities.map((a) => ({
+    ...a,
+    levels: a.levels.map((lv) => ({
+      ...lv,
+      unlocked: storedUnlocks[`${a.name}__${lv.level}`] ?? lv.unlocked,
+    })),
+  }));
+
+  return {
+    ...seed,           // start from current seed (picks up new fields, fixed structure)
+    id:           r.id,
+    currentLevel: r.currentLevel ?? 0,
+    giftLog:      r.giftLog ?? null,
+    note:         r.note ?? "",
+    color,
+    abilities,
   };
-  return { ...r, color: COLOR_MIGRATION[r.color] ?? r.color };
 };
 
 // Card accent bar gradients (horizontal, top bar of each card)

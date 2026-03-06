@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ACCENT_SOLID } from "./constants";
 import { Toast } from "./components/ui/Toast";
+import { OnboardingModal } from "./components/ui/OnboardingModal";
 import { DashboardTab } from "./components/dashboard/DashboardTab";
 import { ResidentsTab } from "./components/residents/ResidentsTab";
 import { InventoryTab } from "./components/inventory/InventoryTab";
@@ -19,6 +20,18 @@ const TABS = [
 export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [toast, setToast] = useState({ message: "", visible: false });
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem("hkia_onboarded")) setOnboardingOpen(true);
+    } catch {}
+  }, []);
+
+  const closeOnboarding = () => {
+    try { localStorage.setItem("hkia_onboarded", "1"); } catch {}
+    setOnboardingOpen(false);
+  };
 
   const showToast = useCallback((msg) => {
     setToast({ message: msg, visible: true });
@@ -118,7 +131,7 @@ export default function App() {
       </div>
 
       {/* Header */}
-      <header style={{ textAlign: "center", padding: "clamp(16px, 4vw, 28px) 16px 0" }}>
+      <header style={{ textAlign: "center", padding: "clamp(16px, 4vw, 28px) 16px 0", position: "relative" }}>
         <h1 style={{
           fontFamily: "'Baloo 2', cursive",
           fontSize: "clamp(1.5rem, 5vw, 2.8rem)",
@@ -129,6 +142,29 @@ export default function App() {
         <p style={{ fontSize: "clamp(0.8rem, 2.5vw, 0.95rem)", color: "#7a6a6a", marginTop: 4, fontWeight: 600 }}>
           Hello Kitty Island Adventure · Tracker &amp; Guide
         </p>
+        <button
+          onClick={() => setOnboardingOpen(true)}
+          aria-label="Open help and onboarding"
+          title="Help"
+          style={{
+            position: "absolute", top: 0, right: 12,
+            background: "rgba(255,255,255,0.7)",
+            border: `2px solid ${solid}44`,
+            borderRadius: "50%",
+            width: 36, height: 36,
+            cursor: "pointer",
+            fontFamily: "'Baloo 2', cursive",
+            fontWeight: 800,
+            fontSize: "1rem",
+            color: solid,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(6px)",
+            transition: "all 0.2s ease",
+            boxShadow: "0 2px 10px rgba(180,130,130,0.15)",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = solid; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.7)"; e.currentTarget.style.color = solid; }}
+        >?</button>
       </header>
 
       {/* Tab Bar */}
@@ -174,6 +210,7 @@ export default function App() {
       </main>
 
       <Toast message={toast.message} visible={toast.visible} />
+      <OnboardingModal open={onboardingOpen} onClose={closeOnboarding} />
     </>
   );
 }

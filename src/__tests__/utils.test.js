@@ -71,17 +71,98 @@ describe("migrateResident", () => {
     expect(migrateResident({ color: "lemon" }).color).toBe("pompompurin");
   });
 
-  it("leaves new Sanrio keys unchanged", () => {
+  it("leaves current Sanrio keys unchanged", () => {
     expect(migrateResident({ color: "kuromi" }).color).toBe("kuromi");
     expect(migrateResident({ color: "chococat" }).color).toBe("chococat");
     expect(migrateResident({ color: "retsuko" }).color).toBe("retsuko");
-    expect(migrateResident({ color: "pekkle" }).color).toBe("pekkle");
-    expect(migrateResident({ color: "hangyodon" }).color).toBe("hangyodon");
   });
 
-  it("preserves all other resident fields", () => {
-    const resident = { id: "abc", name: "Kuromi", color: "kuromi", birthday: "October 31st" };
-    expect(migrateResident(resident)).toMatchObject({ id: "abc", name: "Kuromi", birthday: "October 31st" });
+  it("preserves user progress fields when matched to a seed resident", () => {
+    const stored = {
+      id: "abc123",
+      name: "Hello Kitty",
+      color: "hellokitty",
+      currentLevel: 7,
+      giftLog: { count: 2, lastGiftedAt: new Date().toISOString() },
+      note: "My fave!",
+      abilities: [],
+    };
+    const result = migrateResident(stored);
+    expect(result.id).toBe("abc123");
+    expect(result.currentLevel).toBe(7);
+    expect(result.note).toBe("My fave!");
+    expect(result.giftLog.count).toBe(2);
+  });
+
+  it("replaces abilities with current seed structure when stored abilities are flat", () => {
+    const stored = {
+      id: "abc123",
+      name: "Hello Kitty",
+      color: "hellokitty",
+      currentLevel: 3,
+      giftLog: null,
+      note: "",
+      abilities: [
+        { name: "Sous Chef", description: "25% chance", unlocked: true },
+        { name: "Everyone's Friend", description: "10% faster", unlocked: false },
+      ],
+    };
+    const result = migrateResident(stored);
+    result.abilities.forEach((a) => {
+      expect(Array.isArray(a.levels)).toBe(true);
+      expect(a.levels.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("carries over unlocked state from old flat abilities", () => {
+    const stored = {
+      id: "abc123",
+      name: "Hello Kitty",
+      color: "hellokitty",
+      currentLevel: 5,
+      giftLog: null,
+      note: "",
+      abilities: [
+        { name: "Sous Chef", description: "25% chance", unlocked: true },
+      ],
+    };
+    const result = migrateResident(stored);
+    const sousChef = result.abilities.find((a) => a.name === "Sous Chef");
+    expect(sousChef.levels[0].unlocked).toBe(true);
+  });
+
+  it("carries over unlocked state from already-tiered stored abilities", () => {
+    const stored = {
+      id: "abc123",
+      name: "Hello Kitty",
+      color: "hellokitty",
+      currentLevel: 10,
+      giftLog: null,
+      note: "",
+      abilities: [
+        {
+          name: "Sous Chef",
+          levels: [
+            { level: 1, unlocksAt: 2,  description: "25%", unlocked: true  },
+            { level: 2, unlocksAt: 5,  description: "50%", unlocked: true  },
+            { level: 3, unlocksAt: 13, description: "75%", unlocked: false },
+            { level: 4, unlocksAt: 21, description: "100%", unlocked: false },
+          ],
+        },
+      ],
+    };
+    const result = migrateResident(stored);
+    const sousChef = result.abilities.find((a) => a.name === "Sous Chef");
+    expect(sousChef.levels[0].unlocked).toBe(true);
+    expect(sousChef.levels[1].unlocked).toBe(true);
+    expect(sousChef.levels[2].unlocked).toBe(false);
+  });
+
+  it("returns resident with corrected color when name doesn't match any seed", () => {
+    const stored = { id: "xyz", name: "Unknown Character", color: "coral" };
+    const result = migrateResident(stored);
+    expect(result.color).toBe("hellokitty");
+    expect(result.name).toBe("Unknown Character");
   });
 });
 

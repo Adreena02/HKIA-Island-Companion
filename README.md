@@ -14,10 +14,6 @@ This is the better alternative to scouring the wiki for hours. Everything in one
 
 ---
 
-## ⚠️ Known Issues
-
-- **Ability pill layout inconsistency for existing users** — if you've used the app before, resident cards for characters like Retsuko, Kuromi, and Keroppi may still show companion ability pills side by side instead of stacked vertically. This is because your browser has the old resident data cached. Running `localStorage.removeItem("hkia_residents")` in the browser console and refreshing will fix it, but will reset friendship levels and gift logs. A migration fix is planned for a future update that will patch this automatically without any data loss.
-
 ---
 
 ## ✨ Features
