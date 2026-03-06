@@ -8,9 +8,7 @@ const VALID_LOCATIONS = [
   "Gift Return", "Various", "All Regions",
 ];
 
-// ─── Structure ────────────────────────────────────────────────────────────────
-
-describe("SEED_MATERIALS — structure", () => {
+describe("SEED_MATERIALS structure", () => {
   it("exports a non-empty array", () => {
     expect(Array.isArray(SEED_MATERIALS)).toBe(true);
     expect(SEED_MATERIALS.length).toBeGreaterThan(0);
@@ -73,9 +71,7 @@ describe("SEED_MATERIALS — structure", () => {
   });
 });
 
-// ─── Categories ───────────────────────────────────────────────────────────────
-
-describe("SEED_MATERIALS — categories", () => {
+describe("categories", () => {
   const byCategory = (cat) => SEED_MATERIALS.filter((m) => m.category === cat);
 
   it("has at least one Ingredient", () => {
@@ -100,9 +96,7 @@ describe("SEED_MATERIALS — categories", () => {
   });
 });
 
-// ─── Specific items (spot checks) ─────────────────────────────────────────────
-
-describe("SEED_MATERIALS — spot checks", () => {
+describe("spot checks", () => {
   const find = (name) => SEED_MATERIALS.find((m) => m.name === name);
 
   it("Chocolate Coin is an Ingredient", () => {

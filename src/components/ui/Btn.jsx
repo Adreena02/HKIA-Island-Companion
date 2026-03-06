@@ -8,16 +8,6 @@ const BTN_VARIANTS = {
   danger: { bg: "#ffb3b3", color: "#c0392b", shadow: "transparent", hover: "#ff9191" },
 };
 
-/**
- * Btn
- * A styled button with hover animation.
- *
- * Props:
- *  - variant: "coral" | "mint" | "lav" | "ghost" | "danger"
- *  - small: boolean — renders a compact size
- *  - onClick: function
- *  - style: additional inline styles
- */
 export function Btn({ variant = "coral", onClick, children, small, style: extra }) {
   const v = BTN_VARIANTS[variant];
   const [hov, setHov] = useState(false);

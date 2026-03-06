@@ -16,7 +16,7 @@ This is the better alternative to scouring the wiki for hours. Everything in one
 
 ## ⚠️ Known Issues
 
-- **Ability pill layout inconsistency for existing users** — if you've used the app before, resident cards for characters like Retsuko, Kuromi, and Keroppi may still show companion ability pills side by side instead of stacked vertically. This is because your browser has the old resident data saved. Running `localStorage.removeItem("hkia_residents")` in the browser console and refreshing will fix it, but will reset friendship levels and gift logs. A migration fix is planned for the next update that will patch this automatically without any data loss.
+- **Ability pill layout inconsistency for existing users** — if you've used the app before, resident cards for characters like Retsuko, Kuromi, and Keroppi may still show companion ability pills side by side instead of stacked vertically. This is because your browser has the old resident data cached. Running `localStorage.removeItem("hkia_residents")` in the browser console and refreshing will fix it, but will reset friendship levels and gift logs. A migration fix is planned for a future update that will patch this automatically without any data loss.
 
 ---
 
@@ -29,7 +29,7 @@ The first thing you see when you open the app. A live overview of everything tha
 - **✅ Daily Checklist** — built-in tasks for daily gifts, collecting your daily reward, and completing daily quests. Add your own custom tasks too. A live countdown ticks down to the next 7AM UTC reset. Custom tasks survive resets; checked state does not
 - **🎀 Daily Gifts Summary** — all 22 residents at a glance with dot indicators. Hit **＋ Gift** to log directly from the dashboard. Sorted with residents who still need gifts first
 - **🌟 Friendship Milestones** — pick any resident to see their progress bar, next unlock callout, and full milestone timeline
-- **📅 Seasonal Events** — all 19 known recurring events with live countdowns and Active/Upcoming/All filter
+- **📅 Seasonal Events** — all 19 known recurring events with live countdowns and Active / Upcoming / All filter
 
 ---
 
@@ -56,7 +56,7 @@ Use the filter bar to browse by group, or search by resident name or gift name.
 
 **In the detail modal:**
 - Full **🎀 Daily Gift Tracker** with dot indicators, Log Gift, timestamp, and manual Reset
-- 💝 **Loved Gift** in a pink highlighted box
+- 💝 **Loved Gift** highlighted in a pink box
 - 🎁 **Liked Gifts** sorted by heart tier then friendship value
 - 🎒 **Giftable from Inventory** — cross-references liked tags against your inventory automatically
 - 🌟 **Companion Abilities** — every level with unlock requirement and description, togglable
@@ -69,7 +69,7 @@ Use the filter bar to browse by group, or search by resident name or gift name.
 ### 🎒 Inventory
 
 - **📦 Import Materials** — one-click import of all 52 Friendship Island materials
-- Add, edit, delete items with emoji, name, category, quantity, and up to 4 tags
+- Add, edit, and delete items with emoji, name, category, quantity, and up to 4 tags
 - **📍 Location badge** showing where items are found
 - Tag autocomplete, tag filter bar, tags included in search
 - Quick +/− quantity buttons
@@ -77,26 +77,30 @@ Use the filter bar to browse by group, or search by resident name or gift name.
 
 ---
 
-### 📖 Recipes
+### 📖 Recipes *(work in progress)*
+
+You can add and track your own recipes right now. Full recipe data for all island craftables is coming in a future update.
 
 - Recipe book with ingredients, categories, and results
-- Ingredient autocomplete from inventory
+- Ingredient autocomplete from your inventory
 - Category filter bar — Cooking, Crafting, Farming, Gifting, Other
 - Craftable-first sorting with **✨ Ready badge** and green border glow
 - **"X ready to craft"** counter in the header
 - Live ingredient progress bar per card
-- 🔍 Check Ingredients modal with full ✅/❌ checklist
-- 🎉 Confetti celebration when you have everything ready!
+- 🔍 Check Ingredients modal with full ✅/❌ checklist and "still needed" summary
+- 🎉 Confetti when you have everything ready
 
 ---
 
-### 🪑 Catalogue
+### 🪑 Catalogue *(work in progress)*
 
-- Track furniture ownership with one-tap Owned / Not Owned toggle
+Track furniture you've collected manually right now. A pre-loaded catalogue with all base game and DLC items is on the way.
+
+- One-tap Owned / Not Owned toggle per item
 - Up to 4 tags per item with autocomplete and emoji pills
 - Items grouped by category with per-group owned count
 - Filter by owned status
-- Global owned counter in header
+- Global owned counter in the header
 
 ---
 
@@ -105,16 +109,16 @@ Use the filter bar to browse by group, or search by resident name or gift name.
 - **Dreamy animated background** — slow drifting pastel gradient
 - **Scrolling ticker banner** themed to the active tab
 - **📱 Mobile responsive** — adapts to phones and tablets throughout
-- **Everything saves automatically** — no accounts, no sign-in
-- **Export & Import** full island data as JSON
+- **Everything saves automatically** — no accounts, no sign-in, no server
+- **Export & Import** your full island data as JSON
 - **Toast notifications** for every save and delete
-- **Keyboard accessible** with visible focus indicators
+- **Keyboard accessible** with visible focus indicators throughout
 
 ---
 
 ## 🏷️ Tag System
 
-Tags are how the game determines what gifts a resident will accept. Each resident has 3 liked tags, and any item matching at least one qualifies as a valid gift. This powers the **Giftable from Inventory** feature in the detail modal.
+Tags are how the game determines what gifts a resident will accept. Each resident has 3 liked tags, and any inventory item matching at least one qualifies as a valid gift. This powers the **Giftable from Inventory** feature in the detail modal.
 
 | Tag | Emoji | Tag | Emoji | Tag | Emoji |
 |-----|-------|-----|-------|-----|-------|
@@ -136,17 +140,17 @@ Tags are how the game determines what gifts a resident will accept. Each residen
 | Rainbow | 🌈 | Cheese | 🧀 | Wheatflower | 🌾 |
 | Wand | 🪄 | Glass | 🔮 | | |
 
-New tags you create display as text until added to `TAG_EMOJI` in `src/constants.js`.
+New tags you create yourself will display as text until added to `TAG_EMOJI` in `src/constants.js`.
 
 ---
 
 ## 🎀 Gift Tracking
 
-Each resident can receive up to 3 gifts per day. Reset happens at **7AM UTC** daily — same as the game.
+Each resident can receive up to 3 gifts per day. Reset happens at **7AM UTC** daily — same timing as the game itself.
 
-- Log gifts from the dashboard, resident card, or detail modal
-- Manual reset available in the detail modal
-- Live countdown in the Daily Checklist widget
+- Log gifts from the dashboard, the resident card, or the detail modal
+- Manual reset available in the detail modal (for when you use an in-game reset item)
+- Live countdown to the next reset in the Daily Checklist widget
 
 ---
 
@@ -160,9 +164,10 @@ Each resident can receive up to 3 gifts per day. Reset happens at **7AM UTC** da
 
 - Keyboard navigable throughout with `:focus-visible` outlines themed to the active tab
 - `role="dialog"` and `aria-modal` on all modals
-- `role="progressbar"` with proper attributes on all progress bars
+- `role="progressbar"` with proper `aria-valuenow/min/max` on all progress bars
 - Descriptive `aria-label` on every action button
-- Decorative emoji hidden with `aria-hidden`
+- Decorative emoji marked `aria-hidden`
+- `htmlFor`/`id` pairing on all form labels
 
 ---
 
@@ -171,8 +176,8 @@ Each resident can receive up to 3 gifts per day. Reset happens at **7AM UTC** da
 - **React 18** with hooks
 - **Vite** for the dev environment
 - **Vitest + React Testing Library** for tests
-- **canvas-confetti** for the celebration moment 🎉
-- CSS-in-JS via inline styles
+- **canvas-confetti** for the recipe celebration 🎉
+- CSS-in-JS via inline styles throughout
 
 ---
 
@@ -184,9 +189,7 @@ npm run dev
 npx vitest
 ```
 
-> If upgrading from an earlier version, you can safely delete `src/components/furniture/FurnitureTab.jsx` — replaced by `CatalogueTab.jsx`.
-
-> If things look off after updating, open the browser console and run `localStorage.clear()` then refresh.
+> If things look off after updating from an older version, open the browser console and run `localStorage.clear()` then refresh. This resets all data to defaults.
 
 ---
 
@@ -200,11 +203,13 @@ ACCENT_BG_GRADIENTS: { mychar: "linear-gradient(180deg, #hex1 0%, #hex2 50%, #ff
 ACCENT_SOLID:        { mychar: "#hex" }
 ```
 
+Then add `mychar` as the `color` value on the resident's data object in `SEED_RESIDENTS`.
+
 ---
 
 ## 🌸 A Note
 
-This app is a passion project built by a team of one — designed, developed, tested, and maintained entirely by a single player who got tired of juggling Notepad files and physical notebooks mid-session. Every feature, every piece of game data, every changelog entry, and every late-night bug fix is the work of one person who just wanted a better way to play.
+This app is a passion project built by a team of one — designed, developed, tested, and maintained entirely by a single player who got tired of juggling Notepad files and physical notebooks mid-session. Every feature, every piece of game data, every late-night bug fix is the work of one person who just wanted a better way to play.
 
 If something's broken, it's on the Known Issues list. If something's missing, it's probably on the roadmap. And if you find it helpful, share it with your fellow islanders — that's the whole point. 🐾
 

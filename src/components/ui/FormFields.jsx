@@ -1,10 +1,3 @@
-/**
- * Shared form primitive components.
- * FormGroup  — labelled wrapper with optional hint text
- * Input      — styled text / number input
- * Select     — styled dropdown
- */
-
 const inputStyle = {
   width: "100%",
   padding: "10px 14px",
@@ -24,7 +17,6 @@ const focusHandlers = {
   onBlur:  (e) => { e.target.style.borderColor = "rgba(180,130,130,0.2)"; e.target.style.background = "#f2eee8"; },
 };
 
-// ── FormGroup ──────────────────────────────────────────────────
 export function FormGroup({ label, hint, children }) {
   return (
     <div style={{ marginBottom: 14 }}>
@@ -47,7 +39,6 @@ export function FormGroup({ label, hint, children }) {
   );
 }
 
-// ── Input ──────────────────────────────────────────────────────
 export function Input({ value, onChange, placeholder, type = "text", min, style: extra }) {
   return (
     <input
@@ -62,7 +53,6 @@ export function Input({ value, onChange, placeholder, type = "text", min, style:
   );
 }
 
-// ── Select ─────────────────────────────────────────────────────
 export function Select({ value, onChange, options }) {
   return (
     <select

@@ -1,8 +1,3 @@
-/**
- * Shared display components.
- * SearchBar  — styled search input
- * EmptyState — centered placeholder when a list is empty
- */
 export function SearchBar({ value, onChange, placeholder }) {
   return (
     <input
@@ -31,7 +26,6 @@ export function SearchBar({ value, onChange, placeholder }) {
   );
 }
 
-// ── EmptyState ─────────────────────────────────────────────────
 export function EmptyState({ icon, title, sub }) {
   return (
     <div style={{

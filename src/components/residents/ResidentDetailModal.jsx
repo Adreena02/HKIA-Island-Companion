@@ -1,5 +1,5 @@
 import { Modal } from "../ui/Modal";
-import { ACCENT_GRADIENTS, ACCENT_SOLID, getSafeColor, normaliseAbility } from "../../constants";
+import { ACCENT_GRADIENTS, ACCENT_SOLID, getSafeColor, normalizeAbility } from "../../constants";
 import { TagPill } from "../ui/TagPill";
 import { GiftTracker } from "./GiftTracker";
 
@@ -14,7 +14,7 @@ export function ResidentDetailModal({ resident, open, onClose, onAbilityToggle, 
   const safeColor   = getSafeColor(color);
   const accentStart = ACCENT_GRADIENTS[safeColor].split(",")[0].replace("linear-gradient(90deg, ", "").trim();
   const solidColor  = ACCENT_SOLID[safeColor];
-  const normAbilities = (abilities ?? []).map(normaliseAbility);
+  const normAbilities = (abilities ?? []).map(normalizeAbility);
 
   // Sort liked gifts: highest heartValue first, then highest friendshipValue
   const sortedGifts = [...(gifts ?? [])].sort((a, b) =>

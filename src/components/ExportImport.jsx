@@ -1,14 +1,5 @@
 import { Btn } from "./ui/Btn";
 
-/**
- * ExportImport
- * Provides two buttons:
- *  - Export: serialises all localStorage data to a downloadable JSON file
- *  - Import: reads a JSON file and restores data to localStorage, then reloads
- *
- * Props:
- *  - showToast(message): displays a brief notification
- */
 export function ExportImport({ showToast }) {
   const handleExport = () => {
     const data = {

@@ -9,9 +9,7 @@ const defaultProps = (overrides = {}) => ({
   ...overrides,
 });
 
-// ─── Rendering ────────────────────────────────────────────────────────────────
-
-describe("TagInput — rendering", () => {
+describe("TagInput renders correctly", () => {
   it("renders existing tags as pills", () => {
     render(<TagInput {...defaultProps({ tags: ["Pizza", "Fruit"] })} />);
     expect(screen.getByTitle("Pizza")).toBeInTheDocument();
@@ -39,9 +37,7 @@ describe("TagInput — rendering", () => {
   });
 });
 
-// ─── Adding tags ──────────────────────────────────────────────────────────────
-
-describe("TagInput — adding tags", () => {
+describe("adding tags", () => {
   it("calls onChange with new tag when Enter is pressed", () => {
     const onChange = vi.fn();
     render(<TagInput {...defaultProps({ onChange })} />);
@@ -86,9 +82,7 @@ describe("TagInput — adding tags", () => {
   });
 });
 
-// ─── Removing tags ────────────────────────────────────────────────────────────
-
-describe("TagInput — removing tags", () => {
+describe("removing tags", () => {
   it("calls onChange without the tag when ✕ is clicked", () => {
     const onChange = vi.fn();
     render(<TagInput {...defaultProps({ tags: ["Pizza", "Fruit"], onChange })} />);
@@ -114,9 +108,7 @@ describe("TagInput — removing tags", () => {
   });
 });
 
-// ─── Autocomplete ─────────────────────────────────────────────────────────────
-
-describe("TagInput — autocomplete", () => {
+describe("autocomplete dropdown", () => {
   it("shows suggestions matching input", async () => {
     render(<TagInput {...defaultProps()} />);
     const input = screen.getByRole("textbox");

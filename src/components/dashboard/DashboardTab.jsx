@@ -1,15 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { SEED_RESIDENTS, migrateResident, ACCENT_SOLID, ACCENT_GRADIENTS, getSafeColor, normaliseAbility } from "../../constants";
+import { SEED_RESIDENTS, migrateResident, ACCENT_SOLID, ACCENT_GRADIENTS, getSafeColor, normalizeAbility } from "../../constants";
 import { SEED_EVENTS, EVENT_TYPES } from "../../constants_events";
-import { getCurrentGiftCount, formatNextReset, getLastResetISO } from "../../utils/giftReset";
+import { getCurrentGiftCount, formatNextReset, getLastResetISO, getNextResetTime } from "../../utils/giftReset";
 import { uid } from "../../constants";
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-/** Returns today's {month:1-12, day} */
 function today() {
   const d = new Date();
   return { month: d.getMonth() + 1, day: d.getDate() };
@@ -23,7 +20,6 @@ function daysBetween(a, b) {
   return Math.round((db - da) / 86400000);
 }
 
-/** Returns event status: "active" | "upcoming" | "past" */
 function eventStatus(event) {
   const t = today();
   const yr = new Date().getFullYear();
@@ -58,7 +54,28 @@ function daysRemaining(event) {
   return Math.max(0, Math.ceil((end - now) / 86400000));
 }
 
-// ─── Card wrapper with optional scrollable body ───────────────────────────────
+function useCountdown() {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    function update() {
+      const now  = new Date();
+      const next = getNextResetTime();
+      const diff = Math.max(0, next - now);
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(
+        `${h}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`
+      );
+    }
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return timeLeft;
+}
 
 function DashboardCard({ children, scrollable, maxHeight = 340 }) {
   return (
@@ -88,8 +105,6 @@ function DashboardCard({ children, scrollable, maxHeight = 340 }) {
   );
 }
 
-// ─── Section Header ───────────────────────────────────────────────────────────
-
 function SectionHeader({ emoji, title, sub }) {
   return (
     <div style={{ marginBottom: 16, textAlign: "center" }}>
@@ -101,8 +116,6 @@ function SectionHeader({ emoji, title, sub }) {
   );
 }
 
-// ─── Daily Checklist ─────────────────────────────────────────────────────────
-
 const DEFAULT_TASKS = [
   { id: "gifts",   label: "Give daily gifts to all residents", system: true  },
   { id: "daily-r", label: "Collect daily reward from My Melody", system: true },
@@ -110,7 +123,7 @@ const DEFAULT_TASKS = [
 ];
 
 function DailyChecklist({ showToast }) {
-  const nextReset = formatNextReset();
+  const countdown = useCountdown();
 
   // Checklist state: { date: "YYYY-MM-DD", checked: { taskId: bool }, customTasks: [{id,label}] }
   const [checklistState, setChecklistState] = useLocalStorage("hkia_checklist", {
@@ -153,7 +166,7 @@ function DailyChecklist({ showToast }) {
 
   return (
     <DashboardCard scrollable>
-      <SectionHeader emoji="✅" title="Daily Checklist" sub={`Resets at ${nextReset} · ${doneCount}/${allTasks.length} done`} />
+      <SectionHeader emoji="✅" title="Daily Checklist" sub={`Resets in ${countdown} · ${doneCount}/${allTasks.length} done`} />
       <div>
       {/* Progress bar */}
       <div style={{ height: 7, borderRadius: 10, background: "#f2eee8", overflow: "hidden", marginBottom: 16 }}>
@@ -249,8 +262,6 @@ function DailyChecklist({ showToast }) {
   );
 }
 
-// ─── Daily Gifts Summary ──────────────────────────────────────────────────────
-
 function DailyGiftsSummary({ residents, onLogGift }) {
   const nextReset = formatNextReset();
   const sorted = [...residents].sort((a, b) => {
@@ -343,8 +354,6 @@ function DailyGiftsSummary({ residents, onLogGift }) {
   );
 }
 
-// ─── Friendship Milestones ────────────────────────────────────────────────────
-
 function FriendshipMilestones({ residents }) {
   const [selectedId, setSelectedId] = useState(residents[0]?.id ?? "");
   const resident = residents.find((r) => r.id === selectedId);
@@ -358,7 +367,7 @@ function FriendshipMilestones({ residents }) {
   // Flatten all ability levels into milestone objects sorted by unlocksAt
   const milestones = useMemo(() => {
     if (!resident) return [];
-    const normAbilities = (resident.abilities ?? []).map(normaliseAbility);
+    const normAbilities = (resident.abilities ?? []).map(normalizeAbility);
     const list = [];
     normAbilities.forEach((ability) => {
       ability.levels.forEach((lvl) => {
@@ -492,11 +501,6 @@ function FriendshipMilestones({ residents }) {
                     </div>
                     <div style={{ fontSize: "0.78rem", color: reached ? "#5a4a4a" : "#a09090", lineHeight: 1.4 }}>{m.description}</div>
                   </div>
-                  {!reached && (
-                    <div style={{ flexShrink: 0, fontSize: "0.72rem", fontWeight: 700, color: "#b0a0a0", whiteSpace: "nowrap" }}>
-                      Lv {m.unlocksAt}
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -507,8 +511,6 @@ function FriendshipMilestones({ residents }) {
     </DashboardCard>
   );
 }
-
-// ─── Events Tracker ───────────────────────────────────────────────────────────
 
 function EventsTracker() {
   const [filter, setFilter] = useState("upcoming"); // "active" | "upcoming" | "all"
@@ -644,8 +646,6 @@ function EventsTracker() {
   );
 }
 
-// ─── Dashboard Tab ────────────────────────────────────────────────────────────
-
 export function DashboardTab({ showToast }) {
   const [rawResidents, setResidents] = useLocalStorage("hkia_residents", SEED_RESIDENTS);
   const residents = rawResidents.map(migrateResident);
@@ -671,7 +671,13 @@ export function DashboardTab({ showToast }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <style>{`
         @media (max-width: 700px) {
-          .dashboard-grid { grid-template-columns: 1fr !important; grid-template-rows: auto !important; }
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: auto !important;
+          }
+          .dashboard-grid > * {
+            height: 340px !important;
+          }
         }
       `}</style>
 

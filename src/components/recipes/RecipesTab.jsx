@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { WipNotice } from "../ui/WipNotice";
 import { Btn } from "../ui/Btn";
 import { Modal } from "../ui/Modal";
 import { FormGroup, Input, Select } from "../ui/FormFields";
@@ -8,8 +9,6 @@ import { SEED_RECIPES, SEED_INVENTORY, RECIPE_CATEGORIES, RECIPE_CAT_COLORS, uid
 import confetti from "canvas-confetti";
 
 const BLANK_FORM = { emoji: "", name: "", result: "", category: "Cooking" };
-
-// ─── Ingredient status helper ─────────────────────────────────────────────────
 
 function checkIngredients(ingredients, inventory) {
   return ingredients.map((ing) => {
@@ -21,8 +20,6 @@ function checkIngredients(ingredients, inventory) {
     return { ...ing, have, need, satisfied: have >= need };
   });
 }
-
-// ─── Recipe Detail Modal ──────────────────────────────────────────────────────
 
 function RecipeDetailModal({ recipe, inventory, open, onClose }) {
   const checked   = recipe ? checkIngredients(recipe.ingredients, inventory) : [];
@@ -135,8 +132,6 @@ function RecipeDetailModal({ recipe, inventory, open, onClose }) {
   );
 }
 
-// ─── Recipes Tab ──────────────────────────────────────────────────────────────
-
 export function RecipesTab({ showToast }) {
   const [recipes, setRecipes]           = useLocalStorage("hkia_recipes", SEED_RECIPES);
   const [inventory]                     = useLocalStorage("hkia_inventory", SEED_INVENTORY);
@@ -226,6 +221,12 @@ export function RecipesTab({ showToast }) {
 
   return (
     <>
+      <WipNotice
+        tabId="recipes"
+        title="Recipes are a work in progress 🍰"
+        message="You can add and track your own recipes right now! Full recipe data — including all island craftables and their official ingredients — is coming in a future update."
+      />
+
       {/* Tab header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
         <div>

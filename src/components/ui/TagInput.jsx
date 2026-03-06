@@ -1,15 +1,6 @@
 import { useState, useMemo } from "react";
 import { TagPill } from "./TagPill";
 
-/**
- * TagInput
- * A multi-tag input with autocomplete from existing tags across all items.
- *
- * Props:
- *  - tags: string[]        — current tags on this item
- *  - allTags: string[]     — all known tags (for autocomplete suggestions)
- *  - onChange: (tags) => void
- */
 export function TagInput({ tags = [], allTags = [], onChange }) {
   const [input, setInput] = useState("");
   const [focused, setFocused] = useState(false);

@@ -10,9 +10,7 @@ const recentDate = () => {
 
 const expiredDate = () => new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(); // 2 days ago
 
-// ─── Compact mode ─────────────────────────────────────────────────────────────
-
-describe("GiftTracker — compact mode", () => {
+describe("compact mode", () => {
   it("shows 0/3 gifted when giftLog is null", () => {
     render(<GiftTracker giftLog={null} onLog={vi.fn()} onReset={null} compact />);
     expect(screen.getByText("0/3 gifted")).toBeInTheDocument();
@@ -45,9 +43,7 @@ describe("GiftTracker — compact mode", () => {
   });
 });
 
-// ─── Full mode ────────────────────────────────────────────────────────────────
-
-describe("GiftTracker — full mode", () => {
+describe("full modal mode", () => {
   it("shows 0/3 gifts given today when giftLog is null", () => {
     render(<GiftTracker giftLog={null} onLog={vi.fn()} onReset={vi.fn()} />);
     expect(screen.getByText("0/3 gifts given today")).toBeInTheDocument();

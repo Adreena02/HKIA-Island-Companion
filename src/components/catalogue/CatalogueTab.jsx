@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { WipNotice } from "../ui/WipNotice";
 import { Btn } from "../ui/Btn";
 import { Modal } from "../ui/Modal";
 import { FormGroup, Input, Select } from "../ui/FormFields";
@@ -7,8 +8,6 @@ import { SearchBar, EmptyState } from "../ui/Display";
 import { TagInput } from "../ui/TagInput";
 import { TagPill } from "../ui/TagPill";
 import { SEED_CATALOGUE, CATALOGUE_CATEGORIES, CATALOGUE_OBTAIN, uid } from "../../constants";
-
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOFFEE  = "#c8956c";
 const TOFFEE2 = "#e8c4a0";
@@ -20,8 +19,6 @@ const BLANK_ITEM = {
 
 const CAT_OPTIONS  = CATALOGUE_CATEGORIES.map((c) => ({ value: c, label: c }));
 const OBT_OPTIONS  = CATALOGUE_OBTAIN.map((o) => ({ value: o, label: o }));
-
-// ─── Furniture Form ───────────────────────────────────────────────────────────
 
 function FurnitureForm({ initial, onSave, onCancel, allTags }) {
   const [form, setForm] = useState({ ...BLANK_ITEM, ...(initial ?? {}) });
@@ -88,8 +85,6 @@ function FurnitureForm({ initial, onSave, onCancel, allTags }) {
     </>
   );
 }
-
-// ─── Furniture Card ───────────────────────────────────────────────────────────
 
 function FurnitureCard({ item, onEdit, onDelete, onToggleOwned }) {
   const [hov, setHov] = useState(false);
@@ -173,8 +168,6 @@ function FurnitureCard({ item, onEdit, onDelete, onToggleOwned }) {
   );
 }
 
-// ─── Category Group ───────────────────────────────────────────────────────────
-
 function CategoryGroup({ category, items, onEdit, onDelete, onToggleOwned }) {
   const owned = items.filter((i) => i.owned).length;
   return (
@@ -198,8 +191,6 @@ function CategoryGroup({ category, items, onEdit, onDelete, onToggleOwned }) {
     </div>
   );
 }
-
-// ─── Furniture Tab ────────────────────────────────────────────────────────────
 
 export function CatalogueTab({ showToast }) {
   const [furniture, setFurniture] = useLocalStorage("hkia_catalogue", SEED_CATALOGUE);
@@ -273,6 +264,12 @@ export function CatalogueTab({ showToast }) {
 
   return (
     <>
+      <WipNotice
+        tabId="catalogue"
+        title="Catalogue is a work in progress 🪑"
+        message="Track furniture you've collected right now by adding it manually! A full pre-loaded catalogue with all base game and DLC items is on the way."
+      />
+
       {/* Header row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
         <div>

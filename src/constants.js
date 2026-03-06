@@ -1,19 +1,16 @@
 export const uid = () =>
   Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-// ─── Shared helpers ───────────────────────────────────────────────────────────
-
-/** Returns a safe colour key, falling back to hellokitty if the key is unknown */
+// Falls back to hellokitty if the color key isn't in the palette
 export const getSafeColor = (color) =>
   ACCENT_GRADIENTS?.[color] ? color : "hellokitty";
 
 /** Normalises a single ability to { name, levels: [{ level, unlocksAt, description, unlocked }] } */
-export const normaliseAbility = (a) => {
+export const normalizeAbility = (a) => {
   if (typeof a === "string") return { name: a, levels: [{ level: 1, unlocksAt: 1, description: "", unlocked: false }] };
   if (!a.levels) return { ...a, levels: [{ level: 1, unlocksAt: 1, description: a.description ?? "", unlocked: a.unlocked ?? false }] };
   return a;
 };
-
 
 /** Migrates old colour keys (coral/mint/lav/lemon) to new Sanrio keys */
 export const migrateResident = (r) => {
@@ -25,7 +22,6 @@ export const migrateResident = (r) => {
   };
   return { ...r, color: COLOR_MIGRATION[r.color] ?? r.color };
 };
-
 
 // Card accent bar gradients (horizontal, top bar of each card)
 export const ACCENT_GRADIENTS = {
@@ -140,7 +136,6 @@ export const RECIPE_CAT_COLORS = {
   Gifting:  "#fce4f0",
   Other:    "#f2eee8",
 };
-
 
 export const TAG_EMOJI = {
   "Pizza":         "🍕",
@@ -591,8 +586,6 @@ export const SEED_RESIDENTS = [
     note: "Encountered elsewhere — found in Rainbow Reef (needs Snorkel!)",
   },
 
-  // ─── Quest-unlocked residents ───────────────────────────────────────────────
-
   {
     id: uid(), name: "Wish me mell", birthday: "September 20th", likedTags: ["Fire", "Flower", "Rare"],
     imageUrl: "https://hellokittyislandadventure.wiki.gg/images/Icon_square_WishMeMell.png?670e94",
@@ -771,8 +764,6 @@ export const SEED_RESIDENTS = [
       },
     ],
   },
-
-  // ─── DLC residents ──────────────────────────────────────────────────────────
 
   {
     id: uid(), name: "Usahana", birthday: "August 7th", likedTags: ["Imagination", "Mochi", "Rainbow"],

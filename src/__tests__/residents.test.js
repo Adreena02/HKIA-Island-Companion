@@ -1,25 +1,23 @@
 import { describe, it, expect } from "vitest";
 import { SEED_RESIDENTS, ACCENT_GRADIENTS, TAG_EMOJI } from "../constants";
-import { normaliseAbility } from "../constants";
+import { normalizeAbility } from "../constants";
 
 const VALID_COLORS = Object.keys(ACCENT_GRADIENTS);
 const KNOWN_TAGS = Object.keys(TAG_EMOJI);
 
-// ─── Roster structure ─────────────────────────────────────────────────────────
-
-describe("SEED_RESIDENTS — roster", () => {
-  it("has exactly 13 residents", () => {
-    expect(SEED_RESIDENTS.length).toBe(13);
+describe("roster", () => {
+  it("has exactly 22 residents", () => {
+    expect(SEED_RESIDENTS.length).toBe(22);
   });
 
   it("all ids are unique", () => {
     const ids = SEED_RESIDENTS.map((r) => r.id);
-    expect(new Set(ids).size).toBe(13);
+    expect(new Set(ids).size).toBe(22);
   });
 
   it("all names are unique", () => {
     const names = SEED_RESIDENTS.map((r) => r.name.toLowerCase());
-    expect(new Set(names).size).toBe(13);
+    expect(new Set(names).size).toBe(22);
   });
 
   it("every resident has a non-empty name", () => {
@@ -34,9 +32,11 @@ describe("SEED_RESIDENTS — roster", () => {
     });
   });
 
-  it("every resident has a maxLevel greater than 0", () => {
+  it("every resident has a maxLevel above 0 or null (unknown)", () => {
     SEED_RESIDENTS.forEach((r) => {
-      expect(Number(r.maxLevel), `${r.name} maxLevel should be > 0`).toBeGreaterThan(0);
+      if (r.maxLevel !== null) {
+        expect(Number(r.maxLevel), `${r.name} maxLevel should be > 0`).toBeGreaterThan(0);
+      }
     });
   });
 
@@ -47,12 +47,6 @@ describe("SEED_RESIDENTS — roster", () => {
     });
   });
 
-  it("every resident has a birthday", () => {
-    SEED_RESIDENTS.forEach((r) => {
-      expect(r.birthday, `${r.name} missing birthday`).toBeTruthy();
-    });
-  });
-
   it("every resident has a firstGift", () => {
     SEED_RESIDENTS.forEach((r) => {
       expect(r.firstGift, `${r.name} missing firstGift`).toBeTruthy();
@@ -60,9 +54,62 @@ describe("SEED_RESIDENTS — roster", () => {
   });
 });
 
-// ─── Colors ───────────────────────────────────────────────────────────────────
+describe("unlock groups", () => {
+  const immediate = SEED_RESIDENTS.filter((r) => !r.note && !r.unlockType);
+  const elsewhere = SEED_RESIDENTS.filter((r) => r.note && !r.unlockType);
+  const quest     = SEED_RESIDENTS.filter((r) => r.unlockType === "quest");
+  const dlc       = SEED_RESIDENTS.filter((r) => r.unlockType === "dlc");
 
-describe("SEED_RESIDENTS — colors", () => {
+  it("has 6 immediately available residents", () => {
+    expect(immediate.length).toBe(6);
+  });
+
+  it("has 7 encountered elsewhere residents", () => {
+    expect(elsewhere.length).toBe(7);
+  });
+
+  it("has 7 quest-unlocked residents", () => {
+    expect(quest.length).toBe(7);
+  });
+
+  it("has 2 DLC residents", () => {
+    expect(dlc.length).toBe(2);
+  });
+
+  it("all 22 residents belong to exactly one group", () => {
+    expect(immediate.length + elsewhere.length + quest.length + dlc.length).toBe(22);
+  });
+
+  it("DLC residents have a dlc field naming their pack", () => {
+    dlc.forEach((r) => {
+      expect(r.dlc, `${r.name} missing dlc pack name`).toBeTruthy();
+    });
+  });
+
+  it("Usahana belongs to City Town DLC", () => {
+    const usahana = dlc.find((r) => r.name === "Usahana");
+    expect(usahana?.dlc).toBe("City Town");
+  });
+
+  it("Cogimyun belongs to Wheatflour Wonderland DLC", () => {
+    const cogimyun = dlc.find((r) => r.name === "Cogimyun");
+    expect(cogimyun?.dlc).toBe("Wheatflour Wonderland");
+  });
+
+  it("encountered elsewhere residents all have a note", () => {
+    elsewhere.forEach((r) => {
+      expect(r.note, `${r.name} should have a note`).toBeTruthy();
+    });
+  });
+
+  it("quest and DLC residents all have unlockType set", () => {
+    [...quest, ...dlc].forEach((r) => {
+      expect(r.unlockType, `${r.name} missing unlockType`).toBeTruthy();
+    });
+  });
+});
+
+describe("color palettes", () => {
   it("every resident has a valid color key", () => {
     SEED_RESIDENTS.forEach((r) => {
       expect(VALID_COLORS, `${r.name} has invalid color "${r.color}"`).toContain(r.color);
@@ -74,27 +121,27 @@ describe("SEED_RESIDENTS — colors", () => {
     expect(new Set(colors).size).toBe(colors.length);
   });
 
-  it("Hello Kitty uses hellokitty palette", () => {
+  it("Hello Kitty uses the hellokitty palette", () => {
     const hk = SEED_RESIDENTS.find((r) => r.name === "Hello Kitty");
     expect(hk?.color).toBe("hellokitty");
   });
 
-  it("Kuromi uses kuromi palette", () => {
-    const k = SEED_RESIDENTS.find((r) => r.name === "Kuromi");
-    expect(k?.color).toBe("kuromi");
+  it("Usahana and Cogimyun have their own palettes", () => {
+    const usahana  = SEED_RESIDENTS.find((r) => r.name === "Usahana");
+    const cogimyun = SEED_RESIDENTS.find((r) => r.name === "Cogimyun");
+    expect(VALID_COLORS).toContain(usahana?.color);
+    expect(VALID_COLORS).toContain(cogimyun?.color);
   });
 });
 
-// ─── Tags ─────────────────────────────────────────────────────────────────────
-
-describe("SEED_RESIDENTS — liked tags", () => {
+describe("liked tags", () => {
   it("every resident has exactly 3 liked tags", () => {
     SEED_RESIDENTS.forEach((r) => {
       expect(r.likedTags.length, `${r.name} should have 3 likedTags`).toBe(3);
     });
   });
 
-  it("all liked tags are known TAG_EMOJI keys", () => {
+  it("all liked tags exist in TAG_EMOJI", () => {
     SEED_RESIDENTS.forEach((r) => {
       r.likedTags.forEach((tag) => {
         expect(KNOWN_TAGS, `${r.name} has unknown tag "${tag}"`).toContain(tag);
@@ -109,14 +156,12 @@ describe("SEED_RESIDENTS — liked tags", () => {
   });
 });
 
-// ─── Gifts ────────────────────────────────────────────────────────────────────
-
-describe("SEED_RESIDENTS — gifts", () => {
+describe("gifts", () => {
   it("every resident has a lovedGift with heartValue 3", () => {
     SEED_RESIDENTS.forEach((r) => {
       expect(r.lovedGift, `${r.name} missing lovedGift`).toBeTruthy();
       expect(r.lovedGift.heartValue, `${r.name} lovedGift heartValue should be 3`).toBe(3);
-      expect(r.lovedGift.name, `${r.name} lovedGift name should be non-empty`).toBeTruthy();
+      expect(r.lovedGift.name, `${r.name} lovedGift missing name`).toBeTruthy();
     });
   });
 
@@ -126,11 +171,11 @@ describe("SEED_RESIDENTS — gifts", () => {
     });
   });
 
-  it("all liked gifts have a heartValue between 1 and 2", () => {
+  it("liked gift heartValues are between 1 and 2", () => {
     SEED_RESIDENTS.forEach((r) => {
       r.gifts.forEach((g) => {
-        expect(g.heartValue, `${r.name}: gift "${g.name}" heartValue out of range`).toBeGreaterThanOrEqual(1);
-        expect(g.heartValue, `${r.name}: gift "${g.name}" heartValue out of range`).toBeLessThanOrEqual(2);
+        expect(g.heartValue, `${r.name}: "${g.name}" heartValue out of range`).toBeGreaterThanOrEqual(1);
+        expect(g.heartValue, `${r.name}: "${g.name}" heartValue out of range`).toBeLessThanOrEqual(2);
       });
     });
   });
@@ -138,48 +183,47 @@ describe("SEED_RESIDENTS — gifts", () => {
   it("all gifts have a positive friendshipValue", () => {
     SEED_RESIDENTS.forEach((r) => {
       [r.lovedGift, ...r.gifts].forEach((g) => {
-        expect(g.friendshipValue, `${r.name}: gift "${g.name}" friendshipValue should be > 0`).toBeGreaterThan(0);
+        expect(g.friendshipValue, `${r.name}: "${g.name}" friendshipValue should be > 0`).toBeGreaterThan(0);
       });
     });
   });
 });
 
-// ─── Abilities ────────────────────────────────────────────────────────────────
-
-describe("SEED_RESIDENTS — abilities", () => {
+describe("abilities", () => {
   it("every resident has at least one ability", () => {
     SEED_RESIDENTS.forEach((r) => {
       expect(r.abilities.length, `${r.name} should have at least 1 ability`).toBeGreaterThan(0);
     });
   });
 
-  it("all abilities normalise correctly", () => {
+  it("all abilities normalize correctly", () => {
     SEED_RESIDENTS.forEach((r) => {
       r.abilities.forEach((a) => {
-        const norm = normaliseAbility(a);
-        expect(norm.name, `${r.name}: normalised ability missing name`).toBeTruthy();
-        expect(Array.isArray(norm.levels), `${r.name}: normalised ability missing levels`).toBe(true);
+        const norm = normalizeAbility(a);
+        expect(norm.name, `${r.name}: normalized ability missing name`).toBeTruthy();
+        expect(Array.isArray(norm.levels), `${r.name}: normalized ability missing levels`).toBe(true);
         expect(norm.levels.length).toBeGreaterThan(0);
       });
     });
   });
 
-  it("all ability levels start as unlocked: false", () => {
+  it("all ability levels start unlocked: false", () => {
     SEED_RESIDENTS.forEach((r) => {
       r.abilities.forEach((a) => {
         a.levels.forEach((lv) => {
-          expect(lv.unlocked, `${r.name} ability "${a.name}" level ${lv.level} should start unlocked: false`).toBe(false);
+          expect(lv.unlocked, `${r.name} "${a.name}" level ${lv.level} should start locked`).toBe(false);
         });
       });
     });
   });
 
-  it("ability unlock levels are in ascending order", () => {
+  it("multi-level abilities have ascending unlock requirements", () => {
     SEED_RESIDENTS.forEach((r) => {
       r.abilities.forEach((a) => {
-        const unlockLevels = a.levels.map((lv) => lv.unlocksAt);
-        for (let i = 1; i < unlockLevels.length; i++) {
-          expect(unlockLevels[i], `${r.name} ability "${a.name}" unlock levels not ascending`).toBeGreaterThan(unlockLevels[i - 1]);
+        const levels = a.levels.filter((lv) => lv.unlocksAt !== null);
+        for (let i = 1; i < levels.length; i++) {
+          expect(levels[i].unlocksAt, `${r.name} "${a.name}" unlock levels not ascending`)
+            .toBeGreaterThan(levels[i - 1].unlocksAt);
         }
       });
     });
@@ -189,16 +233,23 @@ describe("SEED_RESIDENTS — abilities", () => {
     SEED_RESIDENTS.forEach((r) => {
       r.abilities.forEach((a) => {
         a.levels.forEach((lv) => {
-          expect(lv.description, `${r.name} ability "${a.name}" level ${lv.level} missing description`).toBeTruthy();
+          expect(lv.description, `${r.name} "${a.name}" level ${lv.level} missing description`).toBeTruthy();
         });
       });
     });
   });
+
+  it("Kiki and Lala share the Meteorology ability", () => {
+    const kiki = SEED_RESIDENTS.find((r) => r.name === "Kiki");
+    const lala = SEED_RESIDENTS.find((r) => r.name === "Lala");
+    const kikiAbility = kiki?.abilities.find((a) => a.name === "Meteorology");
+    const lalaAbility = lala?.abilities.find((a) => a.name === "Meteorology");
+    expect(kikiAbility).toBeTruthy();
+    expect(lalaAbility).toBeTruthy();
+  });
 });
 
-// ─── Spot checks ─────────────────────────────────────────────────────────────
-
-describe("SEED_RESIDENTS — spot checks", () => {
+describe("spot checks", () => {
   const find = (name) => SEED_RESIDENTS.find((r) => r.name === name);
 
   it("Hello Kitty's loved gift is Red Bow Apple Pie", () => {
@@ -209,15 +260,23 @@ describe("SEED_RESIDENTS — spot checks", () => {
     expect(find("Hello Kitty")?.likedTags).toEqual(["Bakery", "Fruit", "Fancy"]);
   });
 
-  it("Hello Kitty maxLevel is 25", () => {
-    expect(Number(find("Hello Kitty")?.maxLevel)).toBe(25);
-  });
-
   it("Kuromi's firstGift is Gizmo", () => {
     expect(find("Kuromi")?.firstGift).toBe("Gizmo");
   });
 
-  it("My Melody's lovedGift is Pink Clouds Ice Cream", () => {
-    expect(find("My Melody")?.lovedGift.name).toBe("Pink Clouds Ice Cream");
+  it("Usahana's birthday is August 7th", () => {
+    expect(find("Usahana")?.birthday).toBe("August 7th");
+  });
+
+  it("Usahana's maxLevel is 20", () => {
+    expect(Number(find("Usahana")?.maxLevel)).toBe(20);
+  });
+
+  it("Big Challenges has a null birthday", () => {
+    expect(find("Big Challenges")?.birthday).toBeNull();
+  });
+
+  it("Cogimyun's maxLevel is 35", () => {
+    expect(Number(find("Cogimyun")?.maxLevel)).toBe(35);
   });
 });

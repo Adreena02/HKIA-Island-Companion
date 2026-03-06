@@ -1,13 +1,5 @@
 import { useState } from "react";
 
-/**
- * QtyBtn
- * A small circular button used to increment or decrement item quantities.
- *
- * Props:
- *  - onClick: function
- *  - children: button label (typically "＋" or "−")
- */
 export function QtyBtn({ onClick, children }) {
   const [hov, setHov] = useState(false);
 

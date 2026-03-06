@@ -20,7 +20,7 @@ export function ResidentsTab({ showToast }) {
       r.gifts?.some((g) => g.name?.toLowerCase().includes(search.toLowerCase()));
     const matchAvail =
       filterAvail === "all"       ? true :
-      filterAvail === "immediate" ? (!r.note && !r.unlockType) || (!r.unlockType) :
+      filterAvail === "immediate" ? (!r.note && !r.unlockType) :
       filterAvail === "elsewhere" ? (r.note && !r.unlockType) :
       filterAvail === "quest"     ? r.unlockType === "quest" :
       filterAvail === "dlc"       ? r.unlockType === "dlc" :

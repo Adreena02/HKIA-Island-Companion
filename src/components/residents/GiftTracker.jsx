@@ -2,17 +2,6 @@ import { getCurrentGiftCount, formatGiftTime, formatNextReset, isExpired } from 
 
 const MAX_GIFTS = 3;
 
-/**
- * GiftTracker
- * Displays and controls daily gift tracking for a resident.
- *
- * Props:
- *  - giftLog: { count, lastGiftedAt } | null
- *  - onLog:   () => void   — log one gift
- *  - onReset: () => void   — manually reset (in-game reset item used)
- *  - compact: boolean      — small card version vs full modal version
- *  - color:   string       — solid accent colour for theming
- */
 export function GiftTracker({ giftLog, onLog, onReset, compact = false, color = "#e8003c" }) {
   const count     = getCurrentGiftCount(giftLog);
   const maxed     = count >= MAX_GIFTS;

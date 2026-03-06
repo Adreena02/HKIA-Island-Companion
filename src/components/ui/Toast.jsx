@@ -1,8 +1,3 @@
-/**
- * Toast
- * A brief notification that slides up from the bottom of the screen.
- * Controlled externally via the `visible` prop.
- */
 export function Toast({ message, visible }) {
   return (
     <div style={{

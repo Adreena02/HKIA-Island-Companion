@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Btn } from "../ui/Btn";
-import { ACCENT_BG_GRADIENTS, ACCENT_GRADIENTS, ACCENT_SOLID, getSafeColor, normaliseAbility } from "../../constants";
+import { ACCENT_BG_GRADIENTS, ACCENT_GRADIENTS, ACCENT_SOLID, getSafeColor, normalizeAbility } from "../../constants";
 import { TagPill } from "../ui/TagPill";
 import { GiftTracker } from "./GiftTracker";
 
@@ -17,7 +17,7 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails, onGiftLog
   const solidColor     = ACCENT_SOLID[safeColor];
   const bgGradient     = ACCENT_BG_GRADIENTS[safeColor];
   const accentGradient = ACCENT_GRADIENTS[safeColor];
-  const normAbilities  = (resident.abilities ?? []).map(normaliseAbility);
+  const normAbilities  = (resident.abilities ?? []).map(normalizeAbility);
   const hasAbilities   = normAbilities.some((a) => a.name?.trim());
 
   return (
@@ -148,7 +148,7 @@ export function ResidentCard({ resident, onLevelChange, onViewDetails, onGiftLog
         {hasAbilities && (
           <div style={{ borderTop: "1px solid #f0ebe5", paddingTop: 12, textAlign: "center", marginBottom: note ? 12 : 0 }}>
             <div style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a", marginBottom: 8 }}>🌟 Companion Abilities</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
               {normAbilities.map((ability, i) => {
                 if (!ability.name?.trim()) return null;
                 const totalLevels    = ability.levels?.length ?? 0;
