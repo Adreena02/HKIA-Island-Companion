@@ -125,7 +125,7 @@ Track furniture you've collected manually right now. A pre-loaded catalogue with
 - **Export & Import** your full island data as JSON
 - **Toast notifications** for every save and delete
 - **Keyboard accessible** with visible focus indicators throughout
-- **Welcome modal** on first visit with a tab tour — reopen anytime via the `?` button
+- **Welcome modal** on first visit with a tab tour — reopen anytime via the `?` button in the top right corner
 
 ---
 
