@@ -201,6 +201,65 @@ function AppInner() {
         </div>
       </main>
 
+      {/* Footer */}
+      <footer style={{
+        textAlign: "center",
+        padding: "24px 16px 32px",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+      }}>
+        <div style={{
+          height: 1,
+          width: "min(320px, 80%)",
+          background: `linear-gradient(90deg, transparent, ${solid}44, transparent)`,
+          marginBottom: 6,
+        }} />
+        <p style={{
+          fontFamily: "'Baloo 2', cursive",
+          fontSize: "0.85rem",
+          fontWeight: 700,
+          color: th.textMuted,
+          margin: 0,
+        }}>
+          made with 🌸 by{" "}
+          <span style={{ color: solid }}>cutecelestial</span>
+        </p>
+        <a
+          href="YOUR_KOFI_URL_HERE"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 7,
+            fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "0.85rem",
+            padding: "6px 16px", borderRadius: 50,
+            background: th.pillBg,
+            color: th.textSub,
+            border: `2px solid ${solid}33`,
+            textDecoration: "none",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = solid;
+            e.currentTarget.style.color = "#fff";
+            e.currentTarget.style.borderColor = solid;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = th.pillBg;
+            e.currentTarget.style.color = th.textSub;
+            e.currentTarget.style.borderColor = `${solid}33`;
+          }}
+        >
+          ☕ support on ko-fi
+        </a>
+        <p style={{
+          fontSize: "0.72rem",
+          color: th.textMuted,
+          margin: 0,
+          fontWeight: 600,
+        }}>
+          not affiliated with Sanrio or Hello Kitty Island Adventure
+        </p>
+      </footer>
+
       <Toast message={toast.message} visible={toast.visible} />
       <OnboardingModal open={onboardingOpen} onClose={closeOnboarding} />
     </>
