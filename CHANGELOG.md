@@ -4,6 +4,51 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
+## [2.5] — Station Recipes, Image Support & Recipes Tab Rebuild
+
+### Added
+- **`constants_stations.js`** — station metadata for all Create stations currently implemented:
+  - **Oven** (Hello Kitty, immediate)
+  - **Cauldron** (Kuromi, quest-locked, Spooky Swamp)
+  - **Soda Machine** (Pekkle, quest-locked, Gemstone Town)
+  - **Dessert Machine** (Pompompurin, quest-locked, Gemstone Mountain)
+  - **Egg Pan Station** (Pekkle & Pompompurin, quest-locked, Gemstone Mountain)
+  - **Pizza Oven** (Retsuko, immediate but requires Stamina/zip line, Mount Hothead)
+  - **Espresso Machine × 2** — Comedy Club (Hangyodon) and Hello Kitty Cafe (Hello Kitty), both quest-locked with different prerequisites
+- **`constants_station_recipes.js`** — 232 recipes across all currently implemented stations, including rarity, tags, ingredients, DLC flags, event flags, and image URLs
+- **`image` field** on recipes — full-resolution wiki image URLs (`hellokittyislandadventure.wiki.gg/images/[Name].png`) for all Oven and Espresso Machine recipes
+- **`stations` array field** on all recipes — replaces the old `station` string to support recipes shared across multiple machines (both Espresso Machines share the same 26 recipes)
+- **Rebuilt `RecipesTab.jsx`** from scratch:
+  - Station selector pill bar at the top
+  - Station info panel — location, owners, base ingredient, upgrade requirements, and contextual notes (e.g. Mount Hothead stamina warning)
+  - Rarity filter pills (All / Common / Uncommon / Rare / Legendary)
+  - Seasonal and DLC toggle filters
+  - Search by recipe name, ingredient, or tag
+  - Recipe cards with image thumbnail, rarity badge, upgrade/seasonal/DLC badges, ingredient preview, and ingredient progress bar cross-referenced against inventory
+  - Craftable recipes sort to the top with a ✨ Ready badge
+  - Detail modal with large image, full ingredient checklist, effect/duration for potions, tag pills, and confetti when all ingredients are ready
+- **`OnboardingModal.jsx`** — 3-step welcome modal for new users, shown automatically on first visit
+  - Step 1: What the app is
+  - Step 2: Tab tour (updated to reflect real station-based Recipes tab)
+  - Step 3: Data & export explainer
+- **`?` help button** in the app header — reopens the onboarding modal at any time, themed to the active tab colour
+
+### Changed
+- **All stations** updated to use `owners: []` array instead of `owner: ""` string — future-proofing for DLC stations with multiple owners
+- **All recipes** migrated from `station: "x"` to `stations: ["x"]` — consistent structure supporting shared recipes
+- **Old user-recipe system removed** from `RecipesTab` — `SEED_RECIPES`, `RECIPE_CATEGORIES`, `RECIPE_CAT_COLORS` no longer used in the tab
+
+### Data
+- **Oven:** 83 recipes (Common, Uncommon, Rare, Legendary + seasonal specials + birthday cakes) — images complete
+- **Cauldron:** 11 recipes (base potions, Mundane default, Magical upgraded potions with effects and durations)
+- **Soda Machine:** 22 recipes
+- **Dessert Machine:** 38 recipes
+- **Egg Pan Station:** 31 recipes
+- **Pizza Oven:** 28 recipes
+- **Espresso Machine:** 26 recipes (shared across both machines) — images complete
+
+---
+
 ## [2.4] — Ability Pill Migration Fix
 
 ### Fixed
@@ -132,7 +177,6 @@ All notable changes to this project, from the very beginning. Newest first.
 ### Added
 - **`constants_materials.js`** — 52 Friendship Island materials with location data
 - **📦 Import Materials** button in Inventory
-- **📍 Location badge** on inventory cards
 - Currency and Weather inventory categories
 
 ---

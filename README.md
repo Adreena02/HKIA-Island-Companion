@@ -14,8 +14,6 @@ This is the better alternative to scouring the wiki for hours. Everything in one
 
 ---
 
----
-
 ## ✨ Features
 
 ### 🏠 Home (Dashboard)
@@ -43,7 +41,7 @@ Use the filter bar to browse by group, or search by resident name or gift name.
 **On the resident card:**
 - **Unlock badge** — Quest residents show a purple 🔮 pill; DLC residents show a gold 💎 pill with the pack name
 - Soft character colour tint outer background with clean white inner card and floating portrait
-- **3 liked tags** as emoji pills — hover to see the tag name
+- **3 liked tags** as emoji pills
 - **Friendship level tracker** with +/− buttons and colour-matched progress bar
 - **🎁 Return Gift** — the item they give you the first time you gift them
 - **🎀 Daily Gift Tracker** — log up to 3 gifts per day, resets at 7AM UTC
@@ -75,16 +73,34 @@ Use the filter bar to browse by group, or search by resident name or gift name.
 
 ### 📖 Recipes *(work in progress)*
 
-You can add and track your own recipes right now. Full recipe data for all island craftables is coming in a future update.
+> 🏝️ Station recipe data is being added gradually — some stations may not have full image support yet, and remaining stations (Candy Cloud Machine, Chef's Station) are still coming.
 
-- Recipe book with ingredients, categories, and results
-- Ingredient autocomplete from your inventory
-- Category filter bar — Cooking, Crafting, Farming, Gifting, Other
-- Craftable-first sorting with **✨ Ready badge** and green border glow
-- **"X ready to craft"** counter in the header
-- Live ingredient progress bar per card
-- 🔍 Check Ingredients modal with full ✅/❌ checklist and "still needed" summary
-- 🎉 Confetti when you have everything ready
+All station recipes pre-loaded with real in-game data. Select a station from the pill bar at the top to browse its recipes.
+
+**Stations:**
+- 🍞 **Oven** — Hello Kitty's station, immediately available. 83 recipes including birthday cakes for every resident and seasonal specials
+- 🧪 **Cauldron** — Kuromi's station in the Witch's Hut, Spooky Swamp. Potions with effects and durations. Upgraded potions require the Wheatflour Wonderland DLC
+- 🥤 **Soda Machine** — Pekkle's station in Gemstone Town. 22 drinks
+- 🍨 **Dessert Machine** — Pompompurin's station on the Dessert Boat. 38 frozen treats
+- 🍳 **Egg Pan Station** — Pekkle & Pompompurin's station in Gemstone Mountain. 31 egg dishes and crepes
+- 🍕 **Pizza Oven** — Retsuko's station on Mount Hothead. 28 pizzas and more. Technically immediate but very hard to reach early game
+- ☕ **Espresso Machine** — Two machines sharing the same recipe list: Hangyodon's in the Comedy Club and Hello Kitty's in the Hello Kitty Cafe. 26 cozy beverages
+
+**Filters:** Rarity (All / Common / Uncommon / Rare / Legendary), 🎉 Seasonal, 💎 DLC, and free-text search
+
+**Recipe cards show:**
+- Item image thumbnail
+- Rarity badge, upgrade/seasonal/DLC indicators
+- Ingredient preview
+- Live ingredient progress bar cross-referenced against your inventory
+- ✨ Ready badge when you have everything — craftable recipes sort to the top
+
+**Detail modal shows:**
+- Large item image
+- Full ingredient checklist with your current inventory quantities
+- Effect and duration for Cauldron potions
+- All tags
+- 🎉 Confetti when everything is ready to craft
 
 ---
 
@@ -109,6 +125,7 @@ Track furniture you've collected manually right now. A pre-loaded catalogue with
 - **Export & Import** your full island data as JSON
 - **Toast notifications** for every save and delete
 - **Keyboard accessible** with visible focus indicators throughout
+- **Welcome modal** on first visit with a tab tour — reopen anytime via the `?` button
 
 ---
 
@@ -116,27 +133,7 @@ Track furniture you've collected manually right now. A pre-loaded catalogue with
 
 Tags are how the game determines what gifts a resident will accept. Each resident has 3 liked tags, and any inventory item matching at least one qualifies as a valid gift. This powers the **Giftable from Inventory** feature in the detail modal.
 
-| Tag | Emoji | Tag | Emoji | Tag | Emoji |
-|-----|-------|-----|-------|-----|-------|
-| Pizza | 🍕 | Tropical | 🌺 | Joke | 🃏 |
-| Chocolate | 🍫 | Device | 📱 | Book | 📖 |
-| Spice | 🧂 | Cozy Beverage | ☕ | Cloth | 🧵 |
-| Aquatic | 🌊 | Fish | 🐟 | Bakery | 🥐 |
-| Fruit | 🍓 | Fancy | 👑 | Critters | 🐛 |
-| Swampy | 🐸 | Wood | 🪵 | Spooky | 🕷️ |
-| Fall | 🍂 | Soda | 🥤 | Sweet | 🍬 |
-| Pink | 🌸 | Dreamy | ✨ | Rocky | 🪨 |
-| Relax | 🛁 | Music | 🎵 | Healthy | 🥗 |
-| Veggie | 🥦 | Sports | ⚽ | Dessert | 🍨 |
-| Dairy | 🥛 | Fire | 🔥 | Metal | ⚙️ |
-| Flower | 🌸 | Rare | 💎 | Cloud | ☁️ |
-| Creative | 🎨 | Gaming | 🎮 | Digital | 💻 |
-| Frozen | 🧊 | Stars | ⭐ | Resilience | 💪 |
-| Volcanic | 🌋 | Imagination | 🌈 | Mochi | 🍡 |
-| Rainbow | 🌈 | Cheese | 🧀 | Wheatflower | 🌾 |
-| Wand | 🪄 | Glass | 🔮 | | |
-
-New tags you create yourself will display as text until added to `TAG_EMOJI` in `src/constants.js`.
+Station recipe tags follow the same system — useful for cross-referencing what a station specialises in.
 
 ---
 
@@ -145,7 +142,7 @@ New tags you create yourself will display as text until added to `TAG_EMOJI` in 
 Each resident can receive up to 3 gifts per day. Reset happens at **7AM UTC** daily — same timing as the game itself.
 
 - Log gifts from the dashboard, the resident card, or the detail modal
-- Manual reset available in the detail modal (for when you use an in-game reset item)
+- Manual reset available in the detail modal
 - Live countdown to the next reset in the Daily Checklist widget
 
 ---

@@ -23,7 +23,7 @@ const STEPS = [
           ["🏠", "Home",      "Daily checklist, gift summary, friendship milestones, and seasonal events — all at a glance"],
           ["🐱", "Residents", "All 22 residents pre-loaded with real gift data, abilities, and friendship tracking"],
           ["🎒", "Inventory", "Track your materials and ingredients, with a quick cross-reference to what each resident likes"],
-          ["📖", "Recipes",   "Add your own recipes and check what you can craft right now based on your inventory"],
+          ["📖", "Recipes",   "All station recipes pre-loaded with real in-game data — browse by station, filter by rarity, and see exactly what you can craft from your inventory right now"],
           ["🪑", "Catalogue", "Keep track of furniture you've collected"],
         ].map(([icon, name, desc]) => (
           <li key={name} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
