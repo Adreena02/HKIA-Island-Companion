@@ -128,21 +128,37 @@ function RecipeDetailModal({ recipe, station, inventory, open, onClose }) {
   );
 }
 
+// Selector list — collapses both Espresso Machines into one button
+const SELECTOR_STATIONS = [
+  ...STATIONS.filter((s) => s.id !== "espresso_comedy" && s.id !== "espresso_cafe"),
+  {
+    id: "espresso",
+    name: "Espresso Machine",
+    emoji: "☕",
+    owners: ["Hangyodon", "Hello Kitty"],
+    location: "Comedy Club & Hello Kitty Cafe",
+    baseIngredient: "Candlenut",
+    upgrade: { friendshipLevel: 4, resident: "Hangyodon", slots: 3 },
+    _ids: ["espresso_comedy", "espresso_cafe"],
+  },
+];
+
 export function RecipesTab({ showToast }) {
   const [inventory] = useLocalStorage("hkia_inventory", SEED_INVENTORY);
-  const [activeStation, setActiveStation] = useState(STATIONS[0].id);
+  const [activeStation, setActiveStation] = useState(SELECTOR_STATIONS[0].id);
   const [search, setSearch] = useState("");
   const [rarityFilter, setRarityFilter] = useState("All");
   const [showEventOnly, setShowEventOnly] = useState(false);
   const [showDlcOnly, setShowDlcOnly] = useState(false);
   const [detailRecipe, setDetailRecipe] = useState(null);
 
-  const station = STATIONS.find((s) => s.id === activeStation);
+  const station = SELECTOR_STATIONS.find((s) => s.id === activeStation);
   const solid = ACCENT_SOLID["hellokitty"];
 
   const stationRecipes = useMemo(() => {
-    return STATION_RECIPES_ENRICHED.filter((r) => r.stations.includes(activeStation));
-  }, [activeStation]);
+    const ids = station?._ids ?? [activeStation];
+    return STATION_RECIPES_ENRICHED.filter((r) => ids.some((id) => r.stations.includes(id)));
+  }, [activeStation, station]);
 
   const enriched = useMemo(() => {
     return stationRecipes.map((r) => {
@@ -180,7 +196,7 @@ export function RecipesTab({ showToast }) {
     <>
       {/* Station selector */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-        {STATIONS.map((s) => {
+        {SELECTOR_STATIONS.map((s) => {
           const isActive = s.id === activeStation;
           return (
             <button
