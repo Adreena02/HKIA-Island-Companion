@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTheme } from "../../contexts/ThemeContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { SearchBar, EmptyState } from "../ui/Display";
 import { ResidentCard } from "./ResidentCard";
@@ -7,6 +8,7 @@ import { SEED_RESIDENTS, migrateResident } from "../../constants";
 import { getCurrentGiftCount } from "../../utils/giftReset";
 
 export function ResidentsTab({ showToast }) {
+  const { th } = useTheme();
   const [rawResidents, setResidents] = useLocalStorage("hkia_residents", SEED_RESIDENTS);
   const [inventory] = useLocalStorage("hkia_inventory", []);
   const residents = rawResidents.map(migrateResident);
@@ -70,25 +72,25 @@ export function ResidentsTab({ showToast }) {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
-        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700 }}>🐾 Island Residents</span>
+        <span style={{ fontFamily: "'Baloo 2', cursive", fontSize: "1.4rem", fontWeight: 700, color: th.text }}>🐾 Island Residents</span>
       </div>
 
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 Search residents or gifts..." />
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "12px 0 20px" }}>
         {[
-          { val: "all",       label: "🌺 All",                    active: "#e8003c" },
-          { val: "immediate", label: "⭐ Immediately Available",   active: "#e8003c" },
-          { val: "elsewhere", label: "🗺️ Encountered Elsewhere",  active: "#e8003c" },
-          { val: "quest",     label: "🔮 Quest Unlocked",         active: "#7c3aed" },
-          { val: "dlc",       label: "💎 DLC",                    active: "#f59e0b" },
+          { val: "all",       label: "🌺 All",                   active: "#e8003c" },
+          { val: "immediate", label: "⭐ Immediately Available",  active: "#e8003c" },
+          { val: "elsewhere", label: "🗺️ Encountered Elsewhere", active: "#e8003c" },
+          { val: "quest",     label: "🔮 Quest Unlocked",        active: "#7c3aed" },
+          { val: "dlc",       label: "💎 DLC",                   active: "#f59e0b" },
         ].map(({ val, label, active }) => (
           <button key={val} onClick={() => setFilterAvail(val)} style={{
             fontFamily: "'Baloo 2', cursive", fontWeight: 700,
             fontSize: "clamp(0.75rem, 2.5vw, 0.85rem)",
             padding: "6px 14px", borderRadius: 50, border: "none", cursor: "pointer",
-            background: filterAvail === val ? active : "rgba(255,255,255,0.6)",
-            color: filterAvail === val ? "#fff" : "#7a6a6a",
+            background: filterAvail === val ? active : th.pillBg,
+            color: filterAvail === val ? "#fff" : th.textSub,
             boxShadow: filterAvail === val ? `0 2px 10px ${active}44` : "none",
             backdropFilter: "blur(8px)",
             transition: "all 0.2s ease",

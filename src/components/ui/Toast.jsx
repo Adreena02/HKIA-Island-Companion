@@ -1,12 +1,15 @@
+import { useTheme } from "../../contexts/ThemeContext";
+
 export function Toast({ message, visible }) {
+  const { th } = useTheme();
   return (
     <div style={{
       position: "fixed",
       bottom: 24,
       left: "50%",
       transform: `translateX(-50%) translateY(${visible ? 0 : 80}px)`,
-      background: "#3a2e2e",
-      color: "#fff",
+      background: th.toastBg,
+      color: th.toastText,
       padding: "10px 24px",
       borderRadius: 50,
       fontWeight: 700,

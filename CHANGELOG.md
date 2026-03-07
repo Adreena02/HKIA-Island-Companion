@@ -4,119 +4,103 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ---
 
+## [2.6] — Night Mode & Theme System
+
+### Added
+- **🌙 Night mode** — a full dark theme with a deep navy-plum palette. Toggled via a 🌙 / ☀️ button in the header, next to the existing `?` help button. Preference persists across sessions in localStorage
+- **`ThemeContext.jsx`** (`src/contexts/ThemeContext.jsx`) — new context provider at the app root. Exports a `th` token map (`th.card`, `th.text`, `th.border`, `th.progressBg`, etc.) and a `dark` boolean, consumed by every component. Single source of truth for both themes
+- **`ACCENT_SOLID_DARK`** — exported override map in `ThemeContext` for character accent colours that are too dark to read against a dark background. Currently overrides Chococat (`#3d1f0a` → warm caramel `#c8956c`) and Badtz-Maru (`#1c1917` → his signature yellow `#facc15`). Applied wherever `solidColor` is derived from a resident's palette: `ResidentCard`, `ResidentDetailModal`, and the Dashboard gift/milestone widgets
+- **Dark background** — deep navy-plum static gradient replaces the animated pastel drift in dark mode. The animation is fully preserved in light mode
+
+### Changed
+- All 17 components updated to consume `useTheme()` — `Btn`, `Toast`, `WipNotice`, `Display`, `FormFields`, `Modal`, `TagPill`, `TagInput`, `OnboardingModal`, `GiftTracker`, `QtyBtn`, `ResidentCard`, `ResidentsTab`, `ResidentDetailModal`, `InventoryTab`, `CatalogueTab`, `RecipesTab`, `DashboardTab`
+- **Resident cards in dark mode** — outer background is a subtle tint of the character's accent colour against the dark card surface, preserving per-character identity without harsh contrast
+- **Header** — `?` and 🌙 buttons share a consistent pill style, both themed to the active tab colour
+- **Ticker banner** — fixed the loop glitch. Both copies now use `flexShrink: 0` with consistent per-message padding so `translateX(-50%)` lands exactly at the start of copy two. Added `willChange: transform` for compositor-layer smoothness. Second copy marked `aria-hidden`
+
+---
+
 ## [2.5] — Station Recipes, Image Support & Recipes Tab Rebuild
 
 ### Added
-- **`constants_stations.js`** — station metadata for all Create stations currently implemented:
-  - **Oven** (Hello Kitty, immediate)
-  - **Cauldron** (Kuromi, quest-locked, Spooky Swamp)
-  - **Soda Machine** (Pekkle, quest-locked, Gemstone Town)
-  - **Dessert Machine** (Pompompurin, quest-locked, Gemstone Mountain)
-  - **Egg Pan Station** (Pekkle & Pompompurin, quest-locked, Gemstone Mountain)
-  - **Pizza Oven** (Retsuko, immediate but requires Stamina/zip line, Mount Hothead)
-  - **Espresso Machine × 2** — Comedy Club (Hangyodon) and Hello Kitty Cafe (Hello Kitty), both quest-locked with different prerequisites
-- **`constants_station_recipes.js`** — 232 recipes across all currently implemented stations, including rarity, tags, ingredients, DLC flags, event flags, and image URLs
-- **`image` field** on recipes — full-resolution wiki image URLs (`hellokittyislandadventure.wiki.gg/images/[Name].png`) for all Oven and Espresso Machine recipes
-- **`stations` array field** on all recipes — replaces the old `station` string to support recipes shared across multiple machines (both Espresso Machines share the same 26 recipes)
+- **`constants_stations.js`** — station metadata for all currently implemented Create stations: Oven, Cauldron, Soda Machine, Dessert Machine, Egg Pan Station, Pizza Oven, and both Espresso Machines (Comedy Club + Hello Kitty Cafe). All stations use `owners: []` array
+- **`constants_station_recipes.js`** — 232 recipes across all stations, with rarity, tags, ingredients, DLC flags, event flags, and image URLs where available
+- **`image` field** on recipes — wiki image URLs filled in for Oven (83 recipes) and Espresso Machine (26 recipes)
+- **`stations` array field** on all recipes — replaces `station: ""` string. Supports shared recipes across multiple machines (both Espresso Machines share the same 26 recipes)
 - **Rebuilt `RecipesTab.jsx`** from scratch:
-  - Station selector pill bar at the top
-  - Station info panel — location, owners, base ingredient, upgrade requirements, and contextual notes (e.g. Mount Hothead stamina warning)
+  - Station selector pill bar
+  - Station info panel (location, owners, base ingredient, upgrade requirements, and contextual notes)
   - Rarity filter pills (All / Common / Uncommon / Rare / Legendary)
   - Seasonal and DLC toggle filters
-  - Search by recipe name, ingredient, or tag
-  - Recipe cards with image thumbnail, rarity badge, upgrade/seasonal/DLC badges, ingredient preview, and ingredient progress bar cross-referenced against inventory
+  - Free-text search by name, ingredient, or tag
+  - Recipe cards with thumbnail, rarity badge, upgrade/seasonal/DLC indicators, ingredient preview, live progress bar
   - Craftable recipes sort to the top with a ✨ Ready badge
-  - Detail modal with large image, full ingredient checklist, effect/duration for potions, tag pills, and confetti when all ingredients are ready
-- **`OnboardingModal.jsx`** — 3-step welcome modal for new users, shown automatically on first visit
-  - Step 1: What the app is
-  - Step 2: Tab tour (updated to reflect real station-based Recipes tab)
-  - Step 3: Data & export explainer
-- **`?` help button** in the app header — reopens the onboarding modal at any time, themed to the active tab colour
+  - Detail modal with large image, full ingredient checklist, effect/duration for potions, tags, and confetti when everything is ready
+- **Espresso Machine UI consolidation** — both machines appear as a single ☕ Espresso Machine button in the station selector. Underlying data unchanged
+- **`OnboardingModal.jsx`** — 3-step welcome modal shown automatically on first visit. `?` button in the header reopens it at any time
 
 ### Changed
-- **All stations** updated to use `owners: []` array instead of `owner: ""` string — future-proofing for DLC stations with multiple owners
-- **All recipes** migrated from `station: "x"` to `stations: ["x"]` — consistent structure supporting shared recipes
-- **Old user-recipe system removed** from `RecipesTab` — `SEED_RECIPES`, `RECIPE_CATEGORIES`, `RECIPE_CAT_COLORS` no longer used in the tab
+- All recipes migrated from `station: ""` to `stations: []`
+- Old manual recipe system removed from RecipesTab (`SEED_RECIPES`, `RECIPE_CATEGORIES`, `RECIPE_CAT_COLORS` no longer used in the tab)
 
 ### Data
-- **Oven:** 83 recipes (Common, Uncommon, Rare, Legendary + seasonal specials + birthday cakes) — images complete
-- **Cauldron:** 11 recipes (base potions, Mundane default, Magical upgraded potions with effects and durations)
-- **Soda Machine:** 22 recipes
-- **Dessert Machine:** 38 recipes
-- **Egg Pan Station:** 31 recipes
-- **Pizza Oven:** 28 recipes
-- **Espresso Machine:** 26 recipes (shared across both machines) — images complete
+| Station | Recipes | Images |
+|---|---|---|
+| Oven | 83 | ✅ Complete |
+| Cauldron | 11 | ⬜ |
+| Soda Machine | 22 | ⬜ |
+| Dessert Machine | 38 | ⬜ |
+| Egg Pan Station | 31 | ⬜ |
+| Pizza Oven | 28 | ⬜ |
+| Espresso Machine | 26 | ✅ Complete |
 
 ---
 
 ## [2.4] — Ability Pill Migration Fix
 
 ### Fixed
-- **Ability pill layout inconsistency for existing users** — `migrateResident` now automatically patches stored resident data against the current seed on every load. Existing users with old flat ability data (`{ name, description, unlocked }`) will have their abilities silently upgraded to the tiered structure (`{ name, levels: [...] }`) without any data loss. Friendship levels, gift logs, notes, and all unlocked ability states are fully preserved across the migration
-
-### Changed
-- **`utils.test.js`** — `migrateResident` tests expanded to cover ability structure migration, unlocked state carry-over from both flat and tiered stored formats, user progress field preservation, and the fallback path for unrecognized residents
+- `migrateResident` now silently patches stored ability data from flat (`{ name, description, unlocked }`) to tiered (`{ name, levels: [...] }`) on every load. Friendship levels, gift logs, notes, and unlocked states fully preserved
 
 ---
 
 ## [2.3] — Code Quality, Full Test Suite & WIP Notices
 
 ### Added
-- **`WipNotice` component** (`src/components/ui/WipNotice.jsx`) — a warm, dismissible amber banner that appears at the top of the Recipes and Catalogue tabs on first visit. Stores dismissal state per-tab in localStorage so it only shows once. Styled to match the island palette with a 🏝️ icon, title, message, and ✕ dismiss button
-- **WIP banner on Recipes tab** — honest about current state: manual recipe entry works now, full island recipe data is coming
-- **WIP banner on Catalogue tab** — explains manual entry is available now, pre-loaded catalogue data is on the way
-- **Onboarding for new users** added to the roadmap
-- **`Modal.test.jsx`** — covers open/closed state, title rendering, ✕ button, backdrop click, Escape key, and ARIA attributes
-- **`useLocalStorage.test.js`** — covers seed values, stored values, updates, functional updates, arrays, objects, and corrupt JSON fallback
-- **`events.test.js`** — covers all 19 events for data integrity: unique ids, valid types, valid month/day ranges, descriptions, the single flash event, the two calendar events, Lighttime Jubilee's New Year wrap-around, and Give and Gather spanning all of December
-- **`filterLogic.test.js`** — tests all 5 resident filters in isolation, verifies correct counts and representative residents, confirms mutual exclusivity across all four groups, and covers search by name, partial name, and gift name
+- **`WipNotice` component** — dismissible amber banner, per-tab dismissal state in localStorage
+- WIP banners on Recipes and Catalogue tabs
+- `Modal.test.jsx`, `useLocalStorage.test.js`, `events.test.js`, `filterLogic.test.js`
 
 ### Changed
-- **`residents.test.js`** fully rewritten to reflect the current 22-resident roster:
-  - All four unlock groups tested (immediate: 6, elsewhere: 7, quest: 7, dlc: 2) with mutual exclusivity checks
-  - DLC-specific tests: Usahana → City Town, Cogimyun → Wheatflour Wonderland, `dlc` field presence
-  - Kiki and Lala shared Meteorology ability test
-  - Big Challenges null birthday, Usahana maxLevel 20, Cogimyun maxLevel 35 spot checks
-- **`TagPill.test.jsx`** — emoji coverage expanded to include new tags (Flower 🌸, Mochi 🍡, Glass 🔮)
-- **`Btn.test.jsx`**, **`QtyBtn.test.jsx`**, **`GiftTracker.test.jsx`**, **`TagInput.test.jsx`**, **`ResidentCard.test.jsx`**, **`materials.test.js`** — updated to reflect current component behavior
+- `residents.test.js` fully rewritten for the 22-resident roster with mutual exclusivity checks across all four groups
+- Tag, Btn, QtyBtn, GiftTracker, TagInput, ResidentCard, materials tests updated
 
 ### Fixed
-- **`immediate` filter bug** in `ResidentsTab.jsx` — a redundant `|| (!r.unlockType)` condition was causing Encountered Elsewhere residents to appear under the Immediately Available filter. Corrected to `!r.note && !r.unlockType`
-- **Dead file removed** — `src/components/furniture/FurnitureTab.jsx` deleted (superseded by `CatalogueTab.jsx`, never imported)
+- `immediate` filter bug — Encountered Elsewhere residents were incorrectly appearing under Immediately Available
+- Dead `FurnitureTab.jsx` removed
 
 ---
 
 ## [2.2] — New Residents, DLC Support & Filter Expansion
 
 ### Added
-- **9 new island residents** — the full resident roster is now 22 characters:
-  - **Quest-unlocked:** Wish me mell, My Sweet Piano, Moppu, TOPHAT, Big Challenges, Kiki, Lala
-  - **DLC:** Usahana (City Town), Cogimyun (Wheatflour Wonderland)
-  - All 9 include full gift data, companion abilities, portraits, birthdays, liked tags, and return gifts sourced from in-game data
-- **`unlockType` field** on residents — `"quest"` or `"dlc"`. DLC residents also carry a `dlc` field naming the pack
-- **🔮 Quest Unlocked filter** (purple) and **💎 DLC filter** (amber) added to the Residents tab filter bar
-- **Unlock badges on resident cards** — Quest residents show a purple `🔮 Quest Unlock` pill; DLC residents show a gold `💎 DLC — [Pack Name]` pill
-- **17 new tags** added to `TAG_EMOJI`: Flower 🌸, Rare 💎, Cloud ☁️, Creative 🎨, Gaming 🎮, Digital 💻, Frozen 🧊, Stars ⭐, Resilience 💪, Volcanic 🌋, Imagination 🌈, Mochi 🍡, Rainbow 🌈, Cheese 🧀, Wheatflower 🌾, Wand 🪄, Glass 🔮
-- **9 new character colour palettes** added to all three accent maps for each new resident
-
-### Changed
-- Ability pills on resident cards now stack vertically so every card is uniform regardless of ability count
-- `null` birthday (Big Challenges) renders as `Unknown`
-- `null` max level renders without a progress bar (Usahana's max level since confirmed as 20)
+- **9 new residents** — full roster now 22. Quest-unlocked: Wish me mell, My Sweet Piano, Moppu, TOPHAT, Big Challenges, Kiki, Lala. DLC: Usahana (City Town), Cogimyun (Wheatflour Wonderland). All 9 include full gift data, abilities, portraits, birthdays, and liked tags
+- `unlockType` field (`"quest"` | `"dlc"`) and `dlc` pack name field on residents
+- 🔮 Quest Unlocked (purple) and 💎 DLC (amber) filter buttons in the Residents tab
+- Unlock type badges on resident cards
+- 17 new tags in `TAG_EMOJI`
+- 9 new character colour palettes across all three accent maps
 
 ---
 
 ## [2.1] — Dashboard Polish & Mobile Responsiveness
 
 ### Added
-- **📱 Full mobile responsiveness** across every tab — grids collapse, filter buttons scale, modals adapt, all flex rows wrap gracefully on narrow screens
-- **⏱️ Live countdown** in Daily Checklist ticking down to the next 7AM UTC reset
-- **＋ Gift quick-log** on the Dashboard Daily Gifts widget
-- **🍑 Warm Peach palette** for the Home tab
+- Full mobile responsiveness across every tab — grids collapse, filter buttons scale, modals adapt
+- Live countdown in Daily Checklist ticking to the next 7AM UTC reset
+- ＋ Gift quick-log button on the Dashboard gift widget
 
 ### Changed
-- Dashboard is now a proper 2×2 grid with fixed row heights and internal scroll on each card
-- Friendship Milestones — removed duplicate level label
+- Dashboard 2×2 grid with fixed row heights and internal scroll on each card
 
 ### Fixed
 - Duplicate `flexShrink` key warning in Daily Checklist toggle button
@@ -127,28 +111,18 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ### Added
 - **🏠 Home tab** as the default landing page
-- **✅ Daily Checklist** with built-in tasks, custom tasks, and 7AM UTC reset
-- **🎀 Daily Gifts Summary** for all residents with dot indicators
-- **🌟 Friendship Milestones** with progress bar, next unlock callout, and full timeline
-- **📅 Seasonal Events** tracker with 19 known recurring events and live countdowns
-- **`constants_events.js`** — seed data for all 19 events
-
-### Fixed
-- `giftReset.js` was a placeholder stub — now fully implemented
-- Daily Checklist resets at 7AM UTC, not local midnight
+- Daily Checklist (with 7AM UTC reset), Daily Gifts Summary, Friendship Milestones, and Seasonal Events widgets
+- `constants_events.js` — seed data for 19 recurring seasonal events
+- `giftReset.js` fully implemented (was a placeholder stub)
 
 ---
 
 ## [1.3 Patch] — Resident Notes, Recipe Improvements & Accessibility
 
 ### Added
-- **📝 Personal Notes** on residents, auto-saved with 2-line card preview
-- Category filter bar and craftable-first sorting on Recipes
-- **✨ Ready badge**, green border glow, and "X ready to craft" counter on Recipes
-
-### Accessibility
-- Global `:focus-visible` ring themed to active tab colour
-- `aria-current`, `aria-label`, `role="dialog"`, `aria-modal`, `role="progressbar"`, `aria-pressed`, `htmlFor`/`id` pairs, `aria-hidden` on decorative emoji throughout
+- 📝 Personal Notes on residents — free-text, saves as you type, 2-line card preview
+- ✨ Ready badge, green border glow, and craftable-first sort on Recipes tab
+- Full accessibility pass: `:focus-visible` rings themed to active tab, `aria-current`, `role="dialog"`, `aria-modal`, `role="progressbar"`, `aria-pressed`, `aria-label`, `htmlFor`/`id` pairs, `aria-hidden` on decorative emoji
 
 ---
 
@@ -160,14 +134,13 @@ All notable changes to this project, from the very beginning. Newest first.
 
 ### Removed
 - Unused `Tag` component from `Display.jsx`
-- Dead `FurnitureTab.jsx`
 
 ---
 
-## [1.1 Patch] — Scrolling Ticker Banner & Extended Test Suite
+## [1.1 Patch] — Scrolling Ticker Banner & Tests
 
 ### Added
-- Scrolling ticker banner themed to the active tab colour
+- Scrolling ticker banner in the header, themed to the active tab colour
 - 6 new test files covering components, data integrity, and edge cases
 
 ---
@@ -175,8 +148,8 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [1.0 Patch] — Materials Seed Data & Inventory Improvements
 
 ### Added
-- **`constants_materials.js`** — 52 Friendship Island materials with location data
-- **📦 Import Materials** button in Inventory
+- `constants_materials.js` — 52 Friendship Island materials with location data
+- 📦 Import Materials one-click button in Inventory
 - Currency and Weather inventory categories
 
 ---
@@ -184,9 +157,9 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.9 Patch] — Gift Tracking & Inventory Editing
 
 ### Added
-- **🎀 Daily Gift Tracker** with automatic 7AM UTC reset
-- **`giftReset.js`** utility and **`GiftTracker`** component
-- **✏️ Edit inventory items**
+- 🎀 Daily Gift Tracker with automatic 7AM UTC reset
+- `giftReset.js` utility and `GiftTracker` component
+- Inventory item editing
 
 ### Changed
 - "View Gifts" renamed to "View Details"
@@ -196,10 +169,10 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.8 Patch] — Character Palettes & Visual Fixes
 
 ### Added
-- 4 new palettes: Chococat, Retsuko, Pekkle, Hangyodon
+- 4 new character palettes: Chococat, Retsuko, Pekkle, Hangyodon
 
 ### Fixed
-- Floating portrait visual bug (thin white line between portrait and card)
+- Floating portrait thin white line visual bug
 - Light palette border visibility
 
 ---
@@ -207,16 +180,14 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.7 Patch] — Dreamy Animated Background
 
 ### Changed
-- Replaced static background with a slow 28-second drifting pastel gradient
+- Slow 28-second drifting pastel gradient replaces the static background
 
 ---
 
 ## [0.6 Patch] — Tag System & Gifting Cross-Reference
 
 ### Added
-- Tag system with up to 4 tags per inventory and catalogue item
-- `TagPill` and `TagInput` components with autocomplete
-- Tag filter bars on Inventory and Catalogue
+- Tag system — up to 4 tags per inventory and catalogue item, `TagPill` and `TagInput` with autocomplete, tag filter bars on Inventory and Catalogue
 - 33-tag emoji map in `constants.js`
 - 3 liked tags per resident
 - 🎒 Giftable from Inventory cross-reference in the resident detail modal
@@ -229,8 +200,8 @@ All notable changes to this project, from the very beginning. Newest first.
 - In-game portrait URLs for all 13 original residents
 
 ### Changed
-- Layered card design — character tint outer background, clean white inner card, floating portrait
-- Roster made fully static (pre-loaded, read-only)
+- Layered card design — character tint outer, clean white inner, floating portrait
+- Roster made fully static and pre-loaded
 
 ### Fixed
 - Various dead exports, wrong tab IDs, ExportImport missing catalogue key
@@ -244,15 +215,14 @@ All notable changes to this project, from the very beginning. Newest first.
 - Three pill states: ○ not started, ◑ partially unlocked, ✓ fully unlocked
 
 ### Removed
-- Friendship Rewards system (replaced by ability tiers)
+- Flat Friendship Rewards system (replaced by ability tiers)
 
 ---
 
 ## [0.3 Patch] — Gift System & Static Game Data
 
 ### Added
-- Loved Gift (❤️❤️❤️) and Liked Gifts with heart and friendship values
-- Full gift data hardcoded for all 13 original residents
+- Loved Gift (❤️❤️❤️) and Liked Gifts with heart and friendship values hardcoded for all 13 original residents
 
 ---
 
@@ -269,7 +239,7 @@ All notable changes to this project, from the very beginning. Newest first.
 ## [0.1 Patch] — Initial Build
 
 ### Added
-- React 18 + Vite project scaffold
+- React 18 + Vite scaffold
 - `useLocalStorage` hook
 - 9 Sanrio colour palettes
 - Animated background, tab bar, themed scrollbar

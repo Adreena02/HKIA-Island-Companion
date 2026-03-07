@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTheme } from "../../contexts/ThemeContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { Modal } from "../ui/Modal";
 import { SearchBar, EmptyState } from "../ui/Display";
@@ -33,6 +34,7 @@ function upgradeLabel(station) {
 }
 
 function RecipeDetailModal({ recipe, station, inventory, open, onClose }) {
+  const { th } = useTheme();
   const allIngredients = useMemo(() => {
     if (!recipe) return [];
     const base = station?.baseIngredient ? [station.baseIngredient] : [];
@@ -55,7 +57,6 @@ function RecipeDetailModal({ recipe, station, inventory, open, onClose }) {
     }), 200);
   }
   if (!open && fired) setFired(false);
-
   if (!recipe) return null;
 
   const rarity = RARITY_COLORS[recipe.rarity] ?? RARITY_COLORS.common;
@@ -71,56 +72,42 @@ function RecipeDetailModal({ recipe, station, inventory, open, onClose }) {
         <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: rarity.bg, color: rarity.text, border: `1px solid ${rarity.border}` }}>
           {RARITY_LABEL[recipe.rarity]}
         </span>
-        {recipe.event && (
-          <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: "#fdf0ff", color: "#7a2d8a", border: "1px solid #e8b8f0" }}>
-            🎉 {recipe.event}
-          </span>
-        )}
-        {recipe.dlc && (
-          <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: "#fff8e0", color: "#8a6a00", border: "1px solid #e8d888" }}>
-            💎 {recipe.dlc}
-          </span>
-        )}
-        {recipe.requiresUpgrade && (
-          <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: "#f0e8ff", color: "#5a2d8a", border: "1px solid #c8a8f0" }}>
-            ⬆️ Requires upgrade
-          </span>
-        )}
+        {recipe.event && <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: "#fdf0ff", color: "#7a2d8a", border: "1px solid #e8b8f0" }}>🎉 {recipe.event}</span>}
+        {recipe.dlc && <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: "#fff8e0", color: "#8a6a00", border: "1px solid #e8d888" }}>💎 {recipe.dlc}</span>}
+        {recipe.requiresUpgrade && <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: "#f0e8ff", color: "#5a2d8a", border: "1px solid #c8a8f0" }}>⬆️ Requires upgrade</span>}
       </div>
 
       {recipe.effect && (
-        <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 12, background: "#f0f8ff", border: "1px solid #c8dff0", fontSize: "0.88rem", color: "#2a4a6a" }}>
+        <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 12, background: th.infoBox, border: `1px solid ${th.infoBoxBorder}`, fontSize: "0.88rem", color: th.infoBoxText }}>
           <span style={{ fontWeight: 700 }}>Effect: </span>{recipe.effect}
-          {recipe.duration && <span style={{ marginLeft: 8, color: "#5a7a9a" }}>· {recipe.duration}</span>}
+          {recipe.duration && <span style={{ marginLeft: 8, opacity: 0.7 }}>· {recipe.duration}</span>}
         </div>
       )}
 
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-          <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#7a6a6a" }}>Ingredients Ready</span>
+          <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: th.textSub }}>Ingredients Ready</span>
           <span style={{ fontSize: "0.85rem", fontWeight: 700, color: canCraft ? "#22c55e" : "#e8637c" }}>{satisfied}/{total}</span>
         </div>
-        <div style={{ height: 10, borderRadius: 10, background: "#f2eee8", overflow: "hidden" }} role="progressbar" aria-valuenow={satisfied} aria-valuemin={0} aria-valuemax={total}>
+        <div style={{ height: 10, borderRadius: 10, background: th.progressBg, overflow: "hidden" }} role="progressbar" aria-valuenow={satisfied} aria-valuemin={0} aria-valuemax={total}>
           <div style={{ height: "100%", borderRadius: 10, width: `${total > 0 ? (satisfied / total) * 100 : 0}%`, background: canCraft ? "linear-gradient(90deg, #22c55e, #86efac)" : "linear-gradient(90deg, #f5a0c8, #e8637c)", transition: "width 0.4s ease" }} />
         </div>
         {canCraft && <div style={{ marginTop: 8, textAlign: "center", fontSize: "0.85rem", fontWeight: 700, color: "#22c55e" }}>✨ You have everything to make this!</div>}
       </div>
 
-      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#7a6a6a", marginBottom: 10 }}>Ingredient Checklist</div>
+      <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: th.textSub, marginBottom: 10 }}>Ingredient Checklist</div>
       {checked.map((ing, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 10, marginBottom: 6, background: ing.satisfied ? "rgba(34,197,94,0.08)" : "rgba(232,99,124,0.08)", border: `1px solid ${ing.satisfied ? "rgba(34,197,94,0.2)" : "rgba(232,99,124,0.2)"}` }}>
           <span style={{ fontSize: "1rem", flexShrink: 0 }} aria-hidden="true">{ing.satisfied ? "✅" : "❌"}</span>
-          <span style={{ flex: 1, fontWeight: 600, fontSize: "0.9rem", color: "#3a2e2e" }}>{ing.name}</span>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: ing.satisfied ? "#22c55e" : "#e8637c" }}>
-            {ing.have} in inventory
-          </span>
+          <span style={{ flex: 1, fontWeight: 600, fontSize: "0.9rem", color: th.text }}>{ing.name}</span>
+          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: ing.satisfied ? "#22c55e" : "#e8637c" }}>{ing.have} in inventory</span>
         </div>
       ))}
 
       {recipe.tags?.length > 0 && (
         <div style={{ marginTop: 16, display: "flex", gap: 6, flexWrap: "wrap" }}>
           {recipe.tags.map((tag) => (
-            <span key={tag} style={{ fontSize: "0.72rem", fontWeight: 700, padding: "2px 8px", borderRadius: 50, background: "#f5f0f8", color: "#7a6a8a", border: "1px solid #e8d8f0" }}>{tag}</span>
+            <span key={tag} style={{ fontSize: "0.72rem", fontWeight: 700, padding: "2px 8px", borderRadius: 50, background: th.tagBg, color: th.tagText, border: `1px solid ${th.tagBorder}` }}>{tag}</span>
           ))}
         </div>
       )}
@@ -128,13 +115,10 @@ function RecipeDetailModal({ recipe, station, inventory, open, onClose }) {
   );
 }
 
-// Selector list — collapses both Espresso Machines into one button
 const SELECTOR_STATIONS = [
   ...STATIONS.filter((s) => s.id !== "espresso_comedy" && s.id !== "espresso_cafe"),
   {
-    id: "espresso",
-    name: "Espresso Machine",
-    emoji: "☕",
+    id: "espresso", name: "Espresso Machine", emoji: "☕",
     owners: ["Hangyodon", "Hello Kitty"],
     location: "Comedy Club & Hello Kitty Cafe",
     baseIngredient: "Candlenut",
@@ -144,6 +128,7 @@ const SELECTOR_STATIONS = [
 ];
 
 export function RecipesTab({ showToast }) {
+  const { th } = useTheme();
   const [inventory] = useLocalStorage("hkia_inventory", SEED_INVENTORY);
   const [activeStation, setActiveStation] = useState(SELECTOR_STATIONS[0].id);
   const [search, setSearch] = useState("");
@@ -189,7 +174,6 @@ export function RecipesTab({ showToast }) {
   }, [enriched, search, rarityFilter, showEventOnly, showDlcOnly]);
 
   const readyCount = enriched.filter((r) => r.canCraft).length;
-
   const upgradeInfo = upgradeLabel(station);
 
   return (
@@ -199,48 +183,41 @@ export function RecipesTab({ showToast }) {
         {SELECTOR_STATIONS.map((s) => {
           const isActive = s.id === activeStation;
           return (
-            <button
-              key={s.id}
+            <button key={s.id}
               onClick={() => { setActiveStation(s.id); setSearch(""); setRarityFilter("All"); setShowEventOnly(false); setShowDlcOnly(false); }}
               style={{
                 fontFamily: "'Baloo 2', cursive", fontWeight: 700,
                 fontSize: "clamp(0.8rem, 2.5vw, 0.95rem)",
                 padding: "8px 18px", borderRadius: 50, border: "none", cursor: "pointer",
-                background: isActive ? solid : "rgba(255,255,255,0.6)",
-                color: isActive ? "#fff" : "#7a6a6a",
-                boxShadow: isActive ? `0 4px 18px ${solid}55` : "0 2px 10px rgba(180,130,130,0.15)",
+                background: isActive ? solid : th.pillBg,
+                color: isActive ? "#fff" : th.textSub,
+                boxShadow: isActive ? `0 4px 18px ${solid}55` : "none",
                 transform: isActive ? "translateY(-2px)" : "none",
-                backdropFilter: "blur(8px)",
-                transition: "all 0.2s ease",
-                whiteSpace: "nowrap",
+                transition: "all 0.2s ease", whiteSpace: "nowrap",
               }}
-            >
-              {s.emoji} {s.name}
-            </button>
+            >{s.emoji} {s.name}</button>
           );
         })}
       </div>
 
       {/* Station info panel */}
       {station && (
-        <div style={{ background: "rgba(255,255,255,0.7)", borderRadius: 18, padding: "16px 20px", marginBottom: 20, backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.9)", display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
+        <div style={{ background: th.cardAlt, borderRadius: 18, padding: "16px 20px", marginBottom: 20, backdropFilter: "blur(8px)", border: `1px solid ${th.border}`, display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
           <div style={{ flex: 1, minWidth: 200 }}>
-            <div style={{ fontFamily: "'Baloo 2', cursive", fontWeight: 800, fontSize: "1.1rem", color: solid, marginBottom: 4 }}>
-              {station.emoji} {station.name}
-            </div>
-            <div style={{ fontSize: "0.85rem", color: "#7a6a6a", display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <div style={{ fontFamily: "'Baloo 2', cursive", fontWeight: 800, fontSize: "1.1rem", color: solid, marginBottom: 4 }}>{station.emoji} {station.name}</div>
+            <div style={{ fontSize: "0.85rem", color: th.textSub, display: "flex", flexWrap: "wrap", gap: 12 }}>
               {station.location && <span>📍 {station.location}</span>}
               <span>👤 {station.owners.join(" & ")}</span>
-              <span>🧂 Base: <strong>{station.baseIngredient}</strong></span>
+              <span>🧂 Base: <strong style={{ color: th.text }}>{station.baseIngredient}</strong></span>
             </div>
             {station.note && (
-              <div style={{ marginTop: 8, fontSize: "0.8rem", color: "#a07040", background: "#fff8e8", borderRadius: 8, padding: "6px 10px", border: "1px solid #f0d8a8" }}>
+              <div style={{ marginTop: 8, fontSize: "0.8rem", color: th.warnText, background: th.warnBg, borderRadius: 8, padding: "6px 10px", border: `1px solid ${th.warnBorder}` }}>
                 ⚠️ {station.note}
               </div>
             )}
           </div>
           {upgradeInfo && (
-            <div style={{ fontSize: "0.82rem", color: "#5a4a8a", background: "#f0e8ff", borderRadius: 10, padding: "8px 12px", border: "1px solid #c8a8f0", maxWidth: 280 }}>
+            <div style={{ fontSize: "0.82rem", color: "#9a78d8", background: th.tagBg, borderRadius: 10, padding: "8px 12px", border: `1px solid ${th.tagBorder}`, maxWidth: 280 }}>
               <span style={{ fontWeight: 700 }}>⬆️ Upgrade: </span>{upgradeInfo}
             </div>
           )}
@@ -267,27 +244,25 @@ export function RecipesTab({ showToast }) {
             fontFamily: "'Baloo 2', cursive", fontWeight: 700,
             fontSize: "clamp(0.72rem, 2vw, 0.82rem)",
             padding: "5px 14px", borderRadius: 50, border: "none", cursor: "pointer",
-            background: rarityFilter === r ? (RARITY_COLORS[r.toLowerCase()]?.bg ?? solid) : "rgba(255,255,255,0.6)",
-            color: rarityFilter === r ? (RARITY_COLORS[r.toLowerCase()]?.text ?? "#fff") : "#7a6a6a",
+            background: rarityFilter === r ? (RARITY_COLORS[r.toLowerCase()]?.bg ?? solid) : th.pillBg,
+            color: rarityFilter === r ? (RARITY_COLORS[r.toLowerCase()]?.text ?? "#fff") : th.textSub,
             boxShadow: rarityFilter === r ? "0 2px 10px rgba(180,130,130,0.2)" : "none",
-            backdropFilter: "blur(8px)", transition: "all 0.2s ease", whiteSpace: "nowrap",
+            transition: "all 0.2s ease", whiteSpace: "nowrap",
           }}>{r}</button>
         ))}
         <button onClick={() => setShowEventOnly((v) => !v)} style={{
-          fontFamily: "'Baloo 2', cursive", fontWeight: 700,
-          fontSize: "clamp(0.72rem, 2vw, 0.82rem)",
+          fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "clamp(0.72rem, 2vw, 0.82rem)",
           padding: "5px 14px", borderRadius: 50, border: "none", cursor: "pointer",
-          background: showEventOnly ? "#f0e0ff" : "rgba(255,255,255,0.6)",
-          color: showEventOnly ? "#7a2d8a" : "#7a6a6a",
-          backdropFilter: "blur(8px)", transition: "all 0.2s ease",
+          background: showEventOnly ? "#f0e0ff" : th.pillBg,
+          color: showEventOnly ? "#7a2d8a" : th.textSub,
+          transition: "all 0.2s ease",
         }}>🎉 Seasonal</button>
         <button onClick={() => setShowDlcOnly((v) => !v)} style={{
-          fontFamily: "'Baloo 2', cursive", fontWeight: 700,
-          fontSize: "clamp(0.72rem, 2vw, 0.82rem)",
+          fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "clamp(0.72rem, 2vw, 0.82rem)",
           padding: "5px 14px", borderRadius: 50, border: "none", cursor: "pointer",
-          background: showDlcOnly ? "#fff8e0" : "rgba(255,255,255,0.6)",
-          color: showDlcOnly ? "#8a6a00" : "#7a6a6a",
-          backdropFilter: "blur(8px)", transition: "all 0.2s ease",
+          background: showDlcOnly ? "#fff8e0" : th.pillBg,
+          color: showDlcOnly ? "#8a6a00" : th.textSub,
+          transition: "all 0.2s ease",
         }}>💎 DLC</button>
       </div>
 
@@ -296,28 +271,24 @@ export function RecipesTab({ showToast }) {
         {filtered.length ? filtered.map((r) => {
           const rarity = RARITY_COLORS[r.rarity] ?? RARITY_COLORS.common;
           return (
-            <div
-              key={r.id}
+            <div key={r.id}
               onClick={() => setDetailRecipe(r)}
-              role="button"
-              tabIndex={0}
-              aria-label={`View recipe for ${r.name}`}
+              role="button" tabIndex={0} aria-label={`View recipe for ${r.name}`}
               onKeyDown={(e) => e.key === "Enter" && setDetailRecipe(r)}
               onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-3px)"}
               onMouseLeave={(e) => e.currentTarget.style.transform = "none"}
               style={{
-                background: "#fffdf9", borderRadius: 18, padding: 18, cursor: "pointer",
-                border: r.canCraft ? "2px solid rgba(34,197,94,0.35)" : `2px solid ${rarity.border}`,
-                boxShadow: r.canCraft ? "0 4px 18px rgba(34,197,94,0.15)" : "0 4px 18px rgba(180,130,130,0.1)",
+                background: th.card, borderRadius: 18, padding: 18, cursor: "pointer",
+                border: r.canCraft ? "2px solid rgba(34,197,94,0.35)" : `2px solid ${th.border}`,
+                boxShadow: r.canCraft ? "0 4px 18px rgba(34,197,94,0.15)" : "0 4px 18px rgba(0,0,0,0.08)",
                 transition: "transform 0.2s ease",
                 display: "flex", flexDirection: "column", gap: 10,
               }}
             >
-              {/* Card header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
                   {r.image && <img src={r.image} alt={r.name} style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }} />}
-                  <div style={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "1rem", color: "#3a2e2e", lineHeight: 1.3 }}>{r.name}</div>
+                  <div style={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "1rem", color: th.text, lineHeight: 1.3 }}>{r.name}</div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
                   {r.canCraft && <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "2px 8px", borderRadius: 50, background: "rgba(34,197,94,0.15)", color: "#16a34a", whiteSpace: "nowrap" }}>✨ Ready</span>}
@@ -325,28 +296,25 @@ export function RecipesTab({ showToast }) {
                 </div>
               </div>
 
-              {/* Badges */}
               <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {r.requiresUpgrade && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "2px 7px", borderRadius: 50, background: "#f0e8ff", color: "#5a2d8a", border: "1px solid #c8a8f0" }}>⬆️ Upgrade</span>}
+                {r.requiresUpgrade && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "2px 7px", borderRadius: 50, background: th.tagBg, color: "#9a78d8", border: `1px solid ${th.tagBorder}` }}>⬆️ Upgrade</span>}
                 {r.event && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "2px 7px", borderRadius: 50, background: "#fdf0ff", color: "#7a2d8a", border: "1px solid #e8b8f0" }}>🎉 Seasonal</span>}
                 {r.dlc && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "2px 7px", borderRadius: 50, background: "#fff8e0", color: "#8a6a00", border: "1px solid #e8d888" }}>💎 DLC</span>}
               </div>
 
-              {/* Ingredients preview */}
-              <div style={{ fontSize: "0.8rem", color: "#7a6a6a" }}>
-                <span style={{ fontWeight: 700, color: "#3a2e2e" }}>{station?.baseIngredient}</span>
-                {r.requiresUpgrade && station?.upgrade?.fixedIngredient && <span> · <span style={{ fontWeight: 700, color: "#3a2e2e" }}>{station.upgrade.fixedIngredient}</span></span>}
+              <div style={{ fontSize: "0.8rem", color: th.textSub }}>
+                <span style={{ fontWeight: 700, color: th.text }}>{station?.baseIngredient}</span>
+                {r.requiresUpgrade && station?.upgrade?.fixedIngredient && <span> · <span style={{ fontWeight: 700, color: th.text }}>{station.upgrade.fixedIngredient}</span></span>}
                 {r.ingredients.map((ing, i) => <span key={i}> · {ing}</span>)}
               </div>
 
-              {/* Progress bar */}
               {r.total > 0 && (
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                    <span style={{ fontSize: "0.7rem", color: "#7a6a6a", fontWeight: 600 }}>Ingredients</span>
+                    <span style={{ fontSize: "0.7rem", color: th.textSub, fontWeight: 600 }}>Ingredients</span>
                     <span style={{ fontSize: "0.7rem", fontWeight: 700, color: r.canCraft ? "#22c55e" : "#e8637c" }}>{r.ready}/{r.total}</span>
                   </div>
-                  <div style={{ height: 5, borderRadius: 5, background: "#f2eee8", overflow: "hidden" }}>
+                  <div style={{ height: 5, borderRadius: 5, background: th.progressBg, overflow: "hidden" }}>
                     <div style={{ height: "100%", borderRadius: 5, width: `${(r.ready / r.total) * 100}%`, background: r.canCraft ? "linear-gradient(90deg, #22c55e, #86efac)" : "linear-gradient(90deg, #f5a0c8, #e8637c)", transition: "width 0.4s ease" }} />
                   </div>
                 </div>
@@ -358,13 +326,7 @@ export function RecipesTab({ showToast }) {
         )}
       </div>
 
-      <RecipeDetailModal
-        recipe={detailRecipe}
-        station={station}
-        inventory={inventory}
-        open={!!detailRecipe}
-        onClose={() => setDetailRecipe(null)}
-      />
+      <RecipeDetailModal recipe={detailRecipe} station={station} inventory={inventory} open={!!detailRecipe} onClose={() => setDetailRecipe(null)} />
     </>
   );
 }

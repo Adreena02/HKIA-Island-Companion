@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { ACCENT_SOLID } from "./constants";
 import { Toast } from "./components/ui/Toast";
 import { OnboardingModal } from "./components/ui/OnboardingModal";
@@ -17,15 +18,14 @@ const TABS = [
   { id: "catalogue", label: "🪑 Catalogue", color: "furniture"   },
 ];
 
-export default function App() {
+function AppInner() {
+  const { dark, setDark, th } = useTheme();
   const [activeTab, setActiveTab] = useState("home");
   const [toast, setToast] = useState({ message: "", visible: false });
   const [onboardingOpen, setOnboardingOpen] = useState(false);
 
   useEffect(() => {
-    try {
-      if (!localStorage.getItem("hkia_onboarded")) setOnboardingOpen(true);
-    } catch {}
+    try { if (!localStorage.getItem("hkia_onboarded")) setOnboardingOpen(true); } catch {}
   }, []);
 
   const closeOnboarding = () => {
@@ -67,30 +67,25 @@ export default function App() {
           100% { transform: translateX(-50%); }
         }
         ::-webkit-scrollbar { width: 7px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(128,80,100,0.15); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: ${solid}; border-radius: 10px; }
         select { appearance: auto; }
-        /* Accessibility — visible focus rings for keyboard navigation */
-        :focus-visible {
-          outline: 3px solid ${solid};
-          outline-offset: 2px;
-          border-radius: 4px;
-        }
-        button:focus-visible, a:focus-visible {
-          outline: 3px solid ${solid};
-          outline-offset: 3px;
-        }
+        :focus-visible { outline: 3px solid ${solid}; outline-offset: 2px; border-radius: 4px; }
+        button:focus-visible, a:focus-visible { outline: 3px solid ${solid}; outline-offset: 3px; }
       `}</style>
 
-      {/* Dreamy animated pastel background */}
+      {/* Background */}
       <div style={{
         position: "fixed", inset: 0, zIndex: -1,
-        background: "linear-gradient(-45deg, #ffd6e7, #e8d5f5, #ffddd2, #d5f5e8, #d5eef5, #f5d5f0, #ffefd5, #d5f5e3)",
-        backgroundSize: "400% 400%",
-        animation: "dreamDrift 28s ease infinite",
+        background: dark
+          ? "linear-gradient(135deg, #1a1020 0%, #1e1428 25%, #181424 50%, #141820 75%, #1a1820 100%)"
+          : "linear-gradient(-45deg, #ffd6e7, #e8d5f5, #ffddd2, #d5f5e8, #d5eef5, #f5d5f0, #ffefd5, #d5f5e3)",
+        backgroundSize: dark ? "100% 100%" : "400% 400%",
+        animation: dark ? "none" : "dreamDrift 28s ease infinite",
+        transition: "background 0.5s ease",
       }} />
 
-      {/* Scrolling ticker banner */}
+      {/* Ticker */}
       <div style={{
         width: "100%", overflow: "hidden",
         background: `linear-gradient(90deg, ${solid}cc, ${solid}99)`,
@@ -99,33 +94,19 @@ export default function App() {
         padding: "7px 0",
         transition: "background 0.5s ease",
       }}>
-        <div style={{
-          display: "flex", whiteSpace: "nowrap",
-          animation: "ticker 22s linear infinite",
-        }}>
-          {[...Array(2)].map((_, i) => (
-            <span key={i} style={{
-              display: "inline-flex", alignItems: "center", gap: 28,
-              paddingRight: 48,
-              fontFamily: "'Baloo 2', cursive",
-              fontSize: "0.85rem", fontWeight: 700,
-              color: "rgba(255,255,255,0.95)",
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
+        <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 22s linear infinite", willChange: "transform" }}>
+          {[0, 1].map((i) => (
+            <div key={i} aria-hidden={i === 1 ? "true" : undefined} style={{
+              display: "inline-flex", alignItems: "center", flexShrink: 0,
+              fontFamily: "'Baloo 2', cursive", fontSize: "0.85rem", fontWeight: 700,
+              color: "rgba(255,255,255,0.95)", letterSpacing: "0.04em", textTransform: "uppercase",
             }}>
-              {[
-                "🌺 Active development",
-                "✨ More features coming soon",
-                "🎀 Thanks for playing!",
-                "🌸 Built with love for HKIA fans",
-                "🍓 Feedback welcome",
-              ].map((msg, j) => (
-                <span key={j} style={{ display: "inline-flex", alignItems: "center", gap: 28 }}>
-                  {msg}
-                  <span style={{ opacity: 0.5 }}>·</span>
+              {["🌺 Active development", "✨ More features coming soon", "🎀 Thanks for playing!", "🌸 Built with love for HKIA fans", "🍓 Feedback welcome"].map((msg, j) => (
+                <span key={j} style={{ display: "inline-flex", alignItems: "center", paddingRight: 40 }}>
+                  {msg}<span style={{ opacity: 0.4, paddingLeft: 40 }}>·</span>
                 </span>
               ))}
-            </span>
+            </div>
           ))}
         </div>
       </div>
@@ -136,59 +117,70 @@ export default function App() {
           fontFamily: "'Baloo 2', cursive",
           fontSize: "clamp(1.5rem, 5vw, 2.8rem)",
           fontWeight: 800, color: solid,
-          textShadow: "3px 3px 0 rgba(255,255,255,0.8)",
+          textShadow: dark ? `2px 2px 0 ${solid}33` : "3px 3px 0 rgba(255,255,255,0.8)",
           transition: "color 0.5s ease",
         }}>🌺 HKIA Island Companion</h1>
-        <p style={{ fontSize: "clamp(0.8rem, 2.5vw, 0.95rem)", color: "#7a6a6a", marginTop: 4, fontWeight: 600 }}>
+        <p style={{ fontSize: "clamp(0.8rem, 2.5vw, 0.95rem)", color: th.textSub, marginTop: 4, fontWeight: 600 }}>
           Hello Kitty Island Adventure · Tracker &amp; Guide
         </p>
-        <button
-          onClick={() => setOnboardingOpen(true)}
-          aria-label="Open help and onboarding"
-          title="Help"
-          style={{
-            position: "absolute", top: 8, right: 12,
-            background: "rgba(255,255,255,0.7)",
-            border: `2px solid ${solid}44`,
-            borderRadius: "50%",
-            width: 36, height: 36,
-            cursor: "pointer",
-            fontFamily: "'Baloo 2', cursive",
-            fontWeight: 800,
-            fontSize: "1rem",
-            color: solid,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            backdropFilter: "blur(6px)",
-            transition: "all 0.2s ease",
-            boxShadow: "0 2px 10px rgba(180,130,130,0.15)",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = solid; e.currentTarget.style.color = "#fff"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.7)"; e.currentTarget.style.color = solid; }}
-        >?</button>
+
+        {/* Header buttons — dark toggle + help */}
+        <div style={{ position: "absolute", top: 8, right: 12, display: "flex", gap: 8 }}>
+          {/* Dark mode toggle */}
+          <button
+            onClick={() => setDark((d) => !d)}
+            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            title={dark ? "Light mode" : "Dark mode"}
+            style={{
+              background: th.pillBg, border: `2px solid ${solid}44`,
+              borderRadius: "50%", width: 36, height: 36,
+              cursor: "pointer", fontSize: "1rem", color: solid,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(6px)", transition: "all 0.2s ease",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = solid; e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = th.pillBg; e.currentTarget.style.color = solid; }}
+          >{dark ? "☀️" : "🌙"}</button>
+
+          {/* Help / onboarding */}
+          <button
+            onClick={() => setOnboardingOpen(true)}
+            aria-label="Open help and onboarding" title="Help"
+            style={{
+              background: th.pillBg, border: `2px solid ${solid}44`,
+              borderRadius: "50%", width: 36, height: 36,
+              cursor: "pointer", fontFamily: "'Baloo 2', cursive", fontWeight: 800,
+              fontSize: "1rem", color: solid,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backdropFilter: "blur(6px)", transition: "all 0.2s ease",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = solid; e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = th.pillBg; e.currentTarget.style.color = solid; }}
+          >?</button>
+        </div>
       </header>
 
       {/* Tab Bar */}
       <nav aria-label="Main navigation" style={{ display: "flex", justifyContent: "center", gap: 8, padding: "clamp(12px, 3vw, 20px) 12px 0", flexWrap: "wrap" }}>
         {TABS.map((tab) => {
-          const isActive  = activeTab === tab.id;
-          const tabSolid  = ACCENT_SOLID[tab.color];
+          const isActive = activeTab === tab.id;
+          const tabSolid = ACCENT_SOLID[tab.color];
           return (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               aria-current={isActive ? "page" : undefined}
               style={{
-              fontFamily: "'Baloo 2', cursive",
-              fontSize: "clamp(0.8rem, 2.5vw, 1rem)",
-              fontWeight: 700,
-              padding: "clamp(7px, 2vw, 10px) clamp(14px, 3vw, 24px)",
-              border: "none", borderRadius: 50, cursor: "pointer",
-              background: isActive ? tabSolid : "rgba(255,255,255,0.6)",
-              color: isActive ? "#fff" : "#7a6a6a",
-              boxShadow: isActive ? `0 4px 18px ${tabSolid}66` : "0 2px 10px rgba(180,130,130,0.15)",
-              transform: isActive ? "translateY(-2px)" : "none",
-              backdropFilter: "blur(8px)",
-              transition: "all 0.2s ease",
-              whiteSpace: "nowrap",
-            }}>{tab.label}</button>
+                fontFamily: "'Baloo 2', cursive", fontSize: "clamp(0.8rem, 2.5vw, 1rem)", fontWeight: 700,
+                padding: "clamp(7px, 2vw, 10px) clamp(14px, 3vw, 24px)",
+                border: "none", borderRadius: 50, cursor: "pointer",
+                background: isActive ? tabSolid : th.pillBg,
+                color: isActive ? "#fff" : th.textSub,
+                boxShadow: isActive ? `0 4px 18px ${tabSolid}66` : "none",
+                transform: isActive ? "translateY(-2px)" : "none",
+                backdropFilter: "blur(8px)", transition: "all 0.2s ease", whiteSpace: "nowrap",
+              }}
+            >{tab.label}</button>
           );
         })}
       </nav>
@@ -212,5 +204,13 @@ export default function App() {
       <Toast message={toast.message} visible={toast.visible} />
       <OnboardingModal open={onboardingOpen} onClose={closeOnboarding} />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppInner />
+    </ThemeProvider>
   );
 }
