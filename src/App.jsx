@@ -147,7 +147,7 @@ export default function App() {
           aria-label="Open help and onboarding"
           title="Help"
           style={{
-            position: "absolute", top: 0, right: 12,
+            position: "absolute", top: 8, right: 12,
             background: "rgba(255,255,255,0.7)",
             border: `2px solid ${solid}44`,
             borderRadius: "50%",
