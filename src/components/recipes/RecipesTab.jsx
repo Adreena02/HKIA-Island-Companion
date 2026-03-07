@@ -62,6 +62,11 @@ function RecipeDetailModal({ recipe, station, inventory, open, onClose }) {
 
   return (
     <Modal open={open} onClose={onClose} title={`${station?.emoji ?? "🍽️"} ${recipe.name}`}>
+      {recipe.image && (
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+          <img src={recipe.image} alt={recipe.name} style={{ width: 80, height: 80, objectFit: "contain" }} />
+        </div>
+      )}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
         <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "3px 10px", borderRadius: 50, background: rarity.bg, color: rarity.text, border: `1px solid ${rarity.border}` }}>
           {RARITY_LABEL[recipe.rarity]}
@@ -294,7 +299,10 @@ export function RecipesTab({ showToast }) {
             >
               {/* Card header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                <div style={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "1rem", color: "#3a2e2e", lineHeight: 1.3 }}>{r.name}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+                  {r.image && <img src={r.image} alt={r.name} style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }} />}
+                  <div style={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: "1rem", color: "#3a2e2e", lineHeight: 1.3 }}>{r.name}</div>
+                </div>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
                   {r.canCraft && <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "2px 8px", borderRadius: 50, background: "rgba(34,197,94,0.15)", color: "#16a34a", whiteSpace: "nowrap" }}>✨ Ready</span>}
                   <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "2px 8px", borderRadius: 50, background: rarity.bg, color: rarity.text, border: `1px solid ${rarity.border}`, whiteSpace: "nowrap" }}>{RARITY_LABEL[r.rarity]}</span>
