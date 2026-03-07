@@ -141,7 +141,7 @@ export function RecipesTab({ showToast }) {
   const solid = ACCENT_SOLID["hellokitty"];
 
   const stationRecipes = useMemo(() => {
-    return STATION_RECIPES_ENRICHED.filter((r) => r.station === activeStation);
+    return STATION_RECIPES_ENRICHED.filter((r) => r.stations.includes(activeStation));
   }, [activeStation]);
 
   const enriched = useMemo(() => {
